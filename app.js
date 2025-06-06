@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupNavigation();
         setupHeaderScroll();
         introAnimations(); 
-        allScrollAnimations(); // C'est ici que la modification principale a lieu
+        allScrollAnimations();
         setupSectionMarkers();
         setupContactForm();
         setupParticles();
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const burgerMenuButton = document.getElementById('burger-menu-button');
         const mobileNav = document.getElementById('mobile-nav-links');
         const mobileNavLinks = mobileNav.querySelectorAll('a.nav-link');
-        const allNavLinks = document.querySelectorAll('a.nav-link, .desktop-nav a.nav-link, .mobile-nav-links a.nav-link'); // Simplifié pour inclure .scroll-link implicitement
+        const allNavLinks = document.querySelectorAll('a.nav-link.scroll-link, .desktop-nav a.nav-link, .mobile-nav-links a.nav-link');
 
         function toggleMobileMenu() {
             const isExpanded = burgerMenuButton.getAttribute('aria-expanded') === 'true';
@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     const targetElement = document.querySelector(href);
                     if (targetElement) {
-                        lenis.scrollTo(targetElement, { offset: 0 }); // Offset 0 pour aller au tout début de la section
+                        lenis.scrollTo(targetElement, { offset: 0 });
                     }
-                    if (mobileNav.classList.contains('open') && window.innerWidth < 992) {
+                    if (mobileNav.classList.contains('open') && window.innerWidth < 992) { // Fermer seulement si menu burger est utilisé
                         toggleMobileMenu();
                     }
                 }
@@ -87,8 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setupHeaderScroll() {
         ScrollTrigger.create({
-            start: "top -70", // Se déclenche un peu après le scroll initial
-            end: 99999,
+            start: "top -70", end: 99999,
             toggleClass: { className: "scrolled", targets: "#site-header" }
         });
     }
@@ -114,16 +113,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 trigger: panel,
                 start: "top top", 
                 pin: true, 
-                // pinSpacing: false, // MODIFIÉ : Commenté ou supprimé.
-                                    // Par défaut, pinSpacing est true.
-                                    // Cela signifie que GSAP ajoutera un espacement
-                                    // pour compenser la hauteur de l'élément épinglé,
-                                    // permettant à tout son contenu d'être visible avant
-                                    // que la section suivante n'apparaisse.
-                                    // Ceci résout le problème de rognage.
+                pinSpacing: false,
             });
 
-            const animatedElements = panel.querySelectorAll('.animate-on-scroll:not(.testimonial-item)');
+            const animatedElements = panel.querySelectorAll('.animate-on-scroll:not(.testimonial-item)'); // Exclure les items de témoignage pour un traitement séparé si besoin de stagger
             animatedElements.forEach(el => {
                 gsap.fromTo(el,
                     { opacity: 0, y: 60, scale: 0.95 },
@@ -131,29 +124,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out",
                         scrollTrigger: {
                             trigger: el,
-                            start: "top 85%", 
+                            start: "top 85%", // Déclenchement quand 85% de l'élément est visible
                             toggleActions: "play none none none",
                         }
                     }
                 );
             });
             
+            // Animation spécifique pour les testimonial-item avec stagger
             const testimonialItems = panel.querySelectorAll('.testimonial-item.animate-on-scroll');
             if (testimonialItems.length > 0) {
                  gsap.fromTo(testimonialItems,
                     { opacity: 0, y: 50, scale: 0.9 },
                     {
                         opacity: 1, y: 0, scale: 1, duration: 0.7,
-                        stagger: 0.2, 
+                        stagger: 0.2, // Délai entre l'apparition de chaque témoignage
                         ease: "power2.out",
                         scrollTrigger: {
-                            trigger: panel.querySelector('.testimonials-grid') || panel, 
+                            trigger: panel.querySelector('.testimonials-grid') || panel, // Déclencher quand la grille est visible
                             start: "top 80%",
                             toggleActions: "play none none none",
                         }
                     }
                 );
             }
+
 
             const textFlowElements = panel.querySelectorAll('.text-flow');
             if (textFlowElements.length > 0) {
@@ -162,33 +157,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, {
                     opacity: 1, y: 0, duration: 0.7, stagger: 0.25, ease: "power2.out",
                     scrollTrigger: {
-                        trigger: panel, // Déclencher quand le panel (section) entre
-                        start: "top 60%", // Un peu avant que le haut du panel atteigne 60% de la fenêtre
+                        trigger: panel,
+                        start: "top 60%",
                         toggleActions: "play none none none",
                     }
                 });
             }
         });
 
-        // Animation spécifique pour la section Phare (si besoin de la garder séparée)
         const phareSection = document.querySelector('#phare');
         if (phareSection) {
             const profilePicContainer = phareSection.querySelector('.phare-image-container');
             const quoteBlock = phareSection.querySelector('blockquote');
-            // Note: Ces éléments sont aussi des .animate-on-scroll, donc ils sont déjà animés.
-            // Si vous voulez une timeline spécifique pour eux, vous pouvez décommenter ce qui suit
-            // et retirer .animate-on-scroll de leurs classes HTML.
-            /*
              gsap.timeline({
                 scrollTrigger: {
                     trigger: phareSection,
-                    start: 'top 60%', // Ajuster selon le besoin
+                    start: 'top 60%',
                     toggleActions: "play none none none",
                 }
             })
             .fromTo(profilePicContainer, { opacity:0, scale:0.8 }, { opacity:1, scale:1, duration: 0.9, ease:'elastic.out(1, 0.7)' })
             .fromTo(quoteBlock, { opacity:0, y:30 }, { opacity:1, y:0, duration: 0.8, ease:'power2.out' }, "-=0.5");
-            */
         }
     }
 
@@ -197,18 +186,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const markerContainer = document.querySelector(".scroll-marker-container");
         const navLinksDesktop = gsap.utils.toArray(".desktop-nav a.nav-link");
         const navLinksMobile = gsap.utils.toArray(".mobile-nav-links a.nav-link");
-        // Créez une map pour un accès plus rapide aux textes des tooltips si nécessaire
-        const sectionTitlesMap = new Map();
-        [...navLinksDesktop, ...navLinksMobile].forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
-                sectionTitlesMap.set(href.substring(1), link.textContent.trim());
-            }
-        });
+        const allNavLinksForTooltip = [...navLinksDesktop, ...navLinksMobile];
 
 
         if (!markerContainer || sections.length === 0) return;
-        markerContainer.innerHTML = ''; 
+        markerContainer.innerHTML = ''; // Vider les marqueurs existants pour reconstruction
 
         sections.forEach((section, index) => {
             const dot = document.createElement("div");
@@ -219,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const tooltip = document.createElement("span");
             tooltip.classList.add("tooltip");
             
-            tooltip.textContent = sectionTitlesMap.get(section.id) || section.id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const navLinkForSection = allNavLinksForTooltip.find(link => link.getAttribute('href') === `#${section.id}`);
+            tooltip.textContent = navLinkForSection ? navLinkForSection.textContent.trim() : section.id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             dot.appendChild(tooltip);
             
             markerContainer.appendChild(dot);
@@ -230,27 +213,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             ScrollTrigger.create({
                 trigger: section,
-                start: "top center", // La section devient active quand son haut atteint le centre de l'écran
-                end: "bottom center", // Reste active jusqu'à ce que son bas quitte le centre de l'écran
+                start: "top center",
+                end: "bottom center",
                 toggleClass: { targets: dot, className: "active" },
                 onEnter: () => setActiveNavLink(section.id),
                 onEnterBack: () => setActiveNavLink(section.id),
             });
         });
         
-        // Activer le premier point et lien de nav au chargement si des sections existent
         if(sections.length > 0) {
             const firstDot = markerContainer.querySelector('.scroll-marker-dot[data-index="0"]');
-            if(firstDot) firstDot.classList.add('active'); // S'assurer que le premier point est actif
-            setActiveNavLink(sections[0].id); // Activer le lien de navigation correspondant
+            if(firstDot) firstDot.classList.add('active');
+            setActiveNavLink(sections[0].id);
         }
     }
     
     function setActiveNavLink(sectionId) {
-        const allHeaderNavLinks = document.querySelectorAll('#site-header .nav-link'); 
+        const allHeaderNavLinks = document.querySelectorAll('#site-header .nav-link'); // Cible plus spécifique
         allHeaderNavLinks.forEach(link => {
             link.classList.remove('active');
-            // Vérifier si l'attribut href correspond à l'ID de la section
             if (link.getAttribute('href') === `#${sectionId}`) {
                 link.classList.add('active');
             }
@@ -269,13 +250,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const originalButtonText = buttonTextSpan.textContent;
                 submitButton.disabled = true;
                 submitButton.classList.add('is-loading');
-                // Ne pas vider le buttonTextSpan ici, le CSS gère l'opacité
-                // buttonTextSpan.textContent = ''; 
+                buttonTextSpan.textContent = '';
                 formStatusMessage.textContent = '';
                 formStatusMessage.className = 'form-status';
 
-                setTimeout(() => { 
-                    const isSuccess = Math.random() > 0.2; 
+                setTimeout(() => { // Simule un envoi réseau
+                    const isSuccess = Math.random() > 0.2; // Simule succès/échec
                     submitButton.classList.remove('is-loading');
                     if (isSuccess) {
                         submitButton.classList.add('is-success');
@@ -284,13 +264,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         contactForm.reset();
                         setTimeout(() => {
                             submitButton.classList.remove('is-success');
-                            // buttonTextSpan.textContent = originalButtonText; // Géré par CSS
+                            buttonTextSpan.textContent = originalButtonText;
                             submitButton.disabled = false;
                         }, 3000);
                     } else {
                         formStatusMessage.textContent = "Une interférence a eu lieu... Veuillez réessayer.";
                         formStatusMessage.classList.add('error');
-                        // buttonTextSpan.textContent = originalButtonText; // Géré par CSS
+                        buttonTextSpan.textContent = originalButtonText;
                         submitButton.disabled = false;
                     }
                 }, 2000);
