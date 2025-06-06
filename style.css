@@ -34,7 +34,7 @@ body {
     line-height: 1.7;
     color: var(--nl-medium-text);
     background-color: var(--nl-dark-bg);
-    overflow: hidden; 
+    /* overflow: hidden; --- CETTE LIGNE EST LA CAUSE PRINCIPALE DES PROBLEMES DE SCROLL AVEC LENIS --- */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -73,7 +73,6 @@ h1, h2, .section-title {
 
 p { font-weight: 400; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--nl-light-text-on-dark); max-width: 750px; margin-left:auto; margin-right:auto;}
 .content-section.appel-section p,
-/* .content-section.phare-section p, /* Retiré car géré plus spécifiquement */
 .content-section.invitation-section p {
     color: var(--nl-medium-text);
 }
@@ -195,7 +194,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     align-items: center; 
     justify-content: center; 
     position: relative; 
-    overflow: hidden; 
+    overflow: hidden; /* overflow: hidden sur les panels est OK, c'est sur body/html que ça pose souci avec Lenis */
     padding: 0 5%; 
     box-sizing: border-box;
 }
@@ -204,8 +203,8 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     max-width: 900px; 
     width: 100%;
     text-align: center;
-    position: relative;
-    z-index: 2;
+    position: relative; /* Nécessaire pour z-index */
+    z-index: 2; /* Ajusté pour laisser place à particlesjs (z-index: 2) en dessous s'il est déplacé */
     padding-top: var(--header-height); 
     padding-bottom: 2rem; 
     max-height: calc(100dvh - var(--header-height) - 2rem); 
@@ -226,14 +225,11 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 }
 
 .appel-section .section-title, .appel-section p,
-.phare-section .section-title, /* Styles spécifiques pour texte de phare ci-dessous */
+.phare-section .section-title, 
 .invitation-section .section-title, .invitation-section p,
 #temoignages .section-title, #temoignages .section-intro, #temoignages .testimonial-name, #temoignages .testimonial-quote {
     color: var(--nl-dark-text);
 }
-/* .phare-section blockquote::before, .phare-section blockquote::after { /* Retiré car guillemets redessinés */
-/*    color: var(--nl-gold); */
-/* } */
 
 .dark-accent-section { background-color: var(--nl-dark-bg); color: var(--nl-light-text-on-dark); }
 .dark-accent-section .section-title, .dark-accent-section h3 { color: var(--nl-light); }
@@ -242,9 +238,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .dark-accent-section .cta-button-secondary:hover { background-color: var(--nl-gold); color: var(--nl-dark-bg); }
 .image-bg-section { background-size: cover; background-position: center center; color: var(--nl-light-text-on-dark); }
 .image-bg-section .image-bg-overlay{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 18, 18, 0.75); z-index: 1; } 
-.image-bg-section .section-content-wrapper { z-index: 3;  }
-.image-bg-section .section-title { color: var(--nl-light); }
-.image-bg-section p { color: #e0e0e0; }
+.image-bg-section .section-content-wrapper { z-index: 3;  } /* Z-index 3 pour le contenu, au-dessus de l'overlay(1) et particles(2) */
 
 /* Élément à animer (état initial) */
 .animate-on-scroll { opacity: 0; transform: translateY(40px); }
@@ -292,12 +286,12 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .defi-section .section-content-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-around; /* Ajusté pour un meilleur espacement si le contenu est moins dense */
     align-items: center;
     height: 100%;
     padding-top: calc(var(--header-height) + 1vh);
     padding-bottom: 2vh;
-    overflow: hidden;
+    overflow: hidden; /* Ceci est pour le wrapper de la section, pas pour le body */
 }
 .defi-section .section-title {
     font-size: clamp(2rem, 4.5vw, 2.8rem);
@@ -319,13 +313,14 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .defi-section .video-challenge-container {
     margin-top: 1.5vh; 
     margin-bottom: 2vh; 
-    width: clamp(220px, 40vw, 280px);
+    width: clamp(220px, 40vw, 280px); /* Ajusté pour petites tailles d'écran */
     aspect-ratio: 9 / 16;
     border-radius: 12px; 
     overflow: hidden;
     box-shadow: var(--shadow-lg);
     border: 3px solid var(--nl-gold-dark);
-    flex-shrink: 1;
+    flex-shrink: 1; /* Permet de rétrécir si nécessaire */
+    min-height: 0; /* Important pour flexbox dans certains cas */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -344,43 +339,42 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 
 /* --- Section 4: PHARE (Design Amélioré) --- */
 .phare-section .phare-image-container {
-    margin-bottom: 2.5rem; /* Plus d'espace sous l'image */
-    margin-top: 1rem; /* Espace au-dessus si nécessaire */
+    margin-bottom: 2.5rem; 
+    margin-top: 1rem; 
     display: flex;
     justify-content: center;
 }
 .phare-section .profile-pic { 
-    width: 170px; /* Légèrement plus grande pour plus d'impact */
+    width: 170px; 
     height: 170px; 
     border-radius: 50%;
-    border: 6px solid var(--nl-gold); /* Bordure dorée plus affirmée */
-    box-shadow: 0 0 30px rgba(218, 165, 32, 0.5), /* Halo doré plus prononcé */
-                0 4px 15px rgba(0,0,0,0.15); /* Ombre portée raffinée */
+    border: 6px solid var(--nl-gold); 
+    box-shadow: 0 0 30px rgba(218, 165, 32, 0.5), 
+                0 4px 15px rgba(0,0,0,0.15); 
     object-fit: cover;
 }
 .phare-section blockquote { 
     font-style: italic;
     color: var(--nl-dark-text);
-    padding: 1rem 0; /* Padding vertical */
-    margin-top: 2rem; /* Plus d'espace au-dessus de la citation */
+    padding: 1rem 0; 
+    margin-top: 2rem; 
     position: relative;
-    max-width: 700px; /* Légèrement plus large pour un texte aéré */
+    max-width: 700px; 
     margin-left: auto;
     margin-right: auto;
-    border-left: 4px solid var(--nl-gold-dark); /* Ligne dorée à gauche, plus foncée pour contraste */
-    padding-left: 2.5rem; /* Espace conséquent après la ligne */
-    text-align: left; /* Texte de la citation aligné à gauche */
+    border-left: 4px solid var(--nl-gold-dark); 
+    padding-left: 2.5rem; 
+    text-align: left; 
 }
-/* Suppression des anciens guillemets via ::before et ::after */
 .phare-section blockquote::before, 
 .phare-section blockquote::after { 
     content: ""; 
     display: none;
 }
 .phare-section .quote-text { 
-    font-size: 1.1rem; /* Taille de police confortable */
+    font-size: 1.1rem; 
     line-height: 1.75; 
-    margin-bottom: 1.5rem; /* Espace entre les paragraphes de la citation */
+    margin-bottom: 1.5rem; 
     color: var(--nl-medium-text); 
 }
 .phare-section .quote-text:last-of-type {
@@ -388,24 +382,44 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 }
 .phare-section .quote-author { 
     display: block; 
-    margin-top: 2rem; /* Bel espace au-dessus de la signature */
+    margin-top: 2rem; 
     font-family: var(--font-headings); 
-    font-weight: 600; /* Un peu de graisse pour la lisibilité */
-    font-size: 1.15rem; /* Taille de la signature */
+    font-weight: 600; 
+    font-size: 1.15rem; 
     color: var(--nl-dark-text);
     text-align: right; 
-    padding-right: 1rem; /* Aligner avec le texte de la citation à droite */
-    font-style: normal; /* Pas d'italique pour la signature, pour contraster avec la citation */
+    padding-right: 1rem; 
+    font-style: normal; 
 }
 .phare-section .quote-author::before {
     content: "— "; 
     color: var(--nl-gold); 
-    font-weight: 600; /* Tiret en gras également */
+    font-weight: 600; 
 }
 
 /* --- Section 5: CONSTELLATION --- */
-.constellation-section { background-image: url('images/community-novalux.jpg'); }
-.constellation-section #particles-js { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+.constellation-section { 
+    background-image: url('images/community-novalux.jpg'); 
+    /* position: relative; implicite car c'est un panel, mais important pour les enfants en position:absolute */
+}
+.constellation-section .image-bg-overlay { 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(18, 18, 18, 0.75); 
+    z-index: 1; /* Le plus bas */
+}
+.constellation-section #particles-js { 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    z-index: 2; /* Au-dessus de l'overlay, en dessous du contenu */
+}
+.constellation-section .section-content-wrapper { 
+    position: relative; /* Nécessaire pour que z-index fonctionne correctement sur cet élément */
+    z-index: 3;  /* Le plus haut, pour que le contenu soit cliquable */
+}
+
 
 /* --- Section 6: NOTRE VOIE --- */
 .invitation-section p {
@@ -465,39 +479,9 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     font-size: 0.9rem; 
     line-height: 1.5;
 }
-#temoignages .cta-button {
-    margin-top: 2rem; 
-}
+/* CTA Bouton pour témoignages qui pointait vers Contact a été supprimé de HTML */
 
-/* --- Section 8: CONTACT --- */
-.contact-intro { 
-    font-size: 1rem; 
-    margin-bottom: 2rem; 
-}
-.contact-form { max-width: 700px; margin: 0 auto; text-align: left; }
-.form-group { margin-bottom: 1.5rem; position: relative; } 
-.form-label { font-size: 0.9rem; margin-bottom: 0.5rem;} 
-.form-input, .form-textarea {
-    padding: 0.8rem 1rem; 
-    font-size: 0.95rem; 
-}
-.form-textarea { min-height: 100px; } 
-.form-submit-group { margin-top: 2rem; } 
-
-.form-submit-button { min-width: 180px; position: relative; }
-.form-submit-button .button-text, .form-submit-button .button-icon-sending, .form-submit-button .button-icon-success { display: inline-block; vertical-align: middle; transition: opacity 0.3s, transform 0.3s; }
-.form-submit-button .button-icon-sending, .form-submit-button .button-icon-success { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
-.form-submit-button .button-icon-sending svg, .form-submit-button .button-icon-success svg { width: 24px; height: 24px; }
-.form-submit-button.is-loading .button-text { opacity: 0; transform: translateY(-10px); }
-.form-submit-button.is-loading .button-icon-sending { opacity: 1; }
-.form-submit-button.is-success .button-text { opacity: 0; transform: translateY(-10px); }
-.form-submit-button.is-success .button-icon-success { opacity: 1; }
-.spinner { animation: rotate 2s linear infinite; width: 24px; height: 24px; }
-.spinner .path { stroke: var(--nl-light); stroke-linecap: round; animation: dash 1.5s ease-in-out infinite; }
-@keyframes rotate { 100% { transform: rotate(360deg); } }
-@keyframes dash { 0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; } }
-.form-status { text-align: center; margin-top: 1.2rem; font-size: 0.9rem; height: 18px; }
-
+/* --- CSS POUR LA SECTION CONTACT SUPPRIMÉ --- */
 
 /* --- Boutons CTA --- */
 .cta-button, .cta-button-secondary {
@@ -505,20 +489,18 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     transition: all var(--transition-medium); font-size: 1rem; cursor: pointer; letter-spacing: 0.8px;
     text-transform: uppercase; border: 2px solid transparent; box-shadow: var(--shadow-sm); margin-top: 1rem;
 }
-/* Spécificité pour les boutons qui sont des liens afin d'assurer la couleur du texte */
 a.cta-button {
-    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark)); /* Fond doré */
-    color: var(--nl-light) !important; /* Texte clair, important pour surcharger couleur de lien par défaut */
+    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark)); 
+    color: var(--nl-light) !important; 
     border: 2px solid var(--nl-gold);
 }
 a.cta-button:hover { 
     background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold)); 
-    color: #fff !important; /* Texte blanc au survol */
+    color: #fff !important; 
     transform: translateY(-3px) scale(1.03); 
     box-shadow: var(--shadow-md); 
 }
-
-.cta-button:not(a) { /* Style pour les <button> qui ont la classe cta-button */
+.cta-button:not(a) { 
     background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark));
     color: var(--nl-light);
     border: 2px solid var(--nl-gold);
@@ -529,8 +511,6 @@ a.cta-button:hover {
     transform: translateY(-3px) scale(1.03); 
     box-shadow: var(--shadow-md);
 }
-
-
 .cta-button-secondary { background-color: transparent; color: var(--nl-gold); border: 2px solid var(--nl-gold); }
 .cta-button-secondary:hover { background-color: var(--nl-gold); color: var(--nl-dark-bg); transform: translateY(-3px) scale(1.03); box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3); }
 
@@ -561,6 +541,14 @@ footer p { font-size: 0.85rem; margin-top: 0.4rem;}
     .logo img {
         height: 40px;
     }
+     .section-content-wrapper {
+        padding-top: calc(var(--header-height) + 1rem); /* Ajuste padding top sur mobile avec header plus petit */
+        max-height: calc(100dvh - var(--header-height) - 2rem);
+     }
+     .no-header-padding .section-content-wrapper {
+         padding-top: 2rem;
+         max-height: calc(100dvh - 4rem);
+     }
 }
 @media (max-width: 768px) {
     html { font-size: 15px; }
@@ -569,8 +557,8 @@ footer p { font-size: 0.85rem; margin-top: 0.4rem;}
     .hero-subtitle { font-size: clamp(1rem, 3vw, 1.5rem); }
     .cta-button, .cta-button-secondary { padding: 0.8rem 1.8rem; font-size: 0.9rem; }
     
-    .phare-section .profile-pic { width: 150px; height: 150px; } /* Ajustement pour mobile */
-    .phare-section blockquote { padding-left: 1.5rem; max-width: 90%; } /* Ajustement pour mobile */
+    .phare-section .profile-pic { width: 150px; height: 150px; } 
+    .phare-section blockquote { padding-left: 1.5rem; max-width: 90%; } 
     .testimonials-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem; 
@@ -582,7 +570,7 @@ footer p { font-size: 0.85rem; margin-top: 0.4rem;}
     .defi-section .sub-title-gold { font-size: clamp(1.1rem, 2.8vw, 1.4rem); }
     .defi-section .section-content-wrapper > p.text-flow { font-size: clamp(0.85rem, 2vw, 0.95rem); }
     .defi-section .video-challenge-container {
-        width: clamp(200px, 50vw, 260px); 
+        width: clamp(200px, 60vw, 260px); /* Augmenté un peu pour mieux s'adapter aux largeurs intermédiaires */
     }
     .defi-section .cta-button-secondary { padding: 0.7rem 1.6rem; font-size: 0.85rem; }
 }
@@ -598,7 +586,10 @@ footer p { font-size: 0.85rem; margin-top: 0.4rem;}
     .image-bg-section p {
         font-size: clamp(0.9rem, 3.5vw, 1rem); 
     }
-    .phare-section .profile-pic { width: 130px; height: 130px; } /* Ajustement pour très petit mobile */
+    .phare-section .profile-pic { width: 130px; height: 130px; } 
     .phare-section .quote-text { font-size: 1rem; }
     .phare-section .quote-author { font-size: 1rem; }
+    .defi-section .video-challenge-container {
+        width: clamp(180px, 70vw, 240px); /* Encore un ajustement pour les écrans très petits */
+    }
 }

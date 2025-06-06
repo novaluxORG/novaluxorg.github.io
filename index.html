@@ -35,7 +35,7 @@
                 <li><a href="#constellation" class="nav-link">Constellation</a></li>
                 <li><a href="#notre-voie" class="nav-link">Notre Voie</a></li>
                 <li><a href="#temoignages" class="nav-link">Échos</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <!-- LIEN CONTACT SUPPRIMÉ -->
             </ul>
             <div class="burger-menu" id="burger-menu-button"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div>
         </nav>
@@ -47,7 +47,7 @@
             <a href="#constellation" class="nav-link">Constellation</a>
             <a href="#notre-voie" class="nav-link">Notre Voie</a>
             <a href="#temoignages" class="nav-link">Échos</a>
-            <a href="#contact" class="nav-link">Contact</a>
+            <!-- LIEN CONTACT SUPPRIMÉ -->
         </div>
     </header>
 
@@ -132,12 +132,12 @@
 
             <!-- SECTION 5: LA CONSTELLATION -->
             <section id="constellation" class="content-section constellation-section image-bg-section panel">
-                 <div class="image-bg-overlay"></div>
-                <div class="section-content-wrapper">
+                 <div class="image-bg-overlay"></div> <!-- Z-index 1 via CSS -->
+                 <div id="particles-js" class="particles-background"></div> <!-- Déplacé ici, Z-index 2 via CSS -->
+                <div class="section-content-wrapper"> <!-- Z-index 3 via CSS -->
                     <h2 class="section-title animate-on-scroll">Notre Constellation Lumineuse</h2>
                     <p class="animate-on-scroll text-flow">Nova Lux, c'est avant tout une danse d'âmes qui s'unissent, partagent les éclats de leurs découvertes et s'élèvent ensemble sur la voie de la lumière. Chaque être est une étoile, unique, irremplaçable, dont la brillance enrichit notre firmament commun.</p>
                     <p class="animate-on-scroll text-flow">Plongez au cœur de nos échanges vivifiants, prenez part à nos cercles de parole où chaque murmure de l'âme est accueilli avec respect et amour. Trouvez votre place au sein de notre famille d'esprits, où ensemble, nous tissons des liens d'or qui transcendent le voile du quotidien et abreuvent l'esprit.</p>
-                    <div id="particles-js" class="particles-background"></div>
                     <a href="https://discord.gg/3nBWDpw9" class="cta-button animate-on-scroll" id="join-discord-cta" target="_blank" rel="noopener noreferrer">Rejoindre Notre Ciel Étoilé</a>
                 </div>
             </section>
@@ -194,11 +194,11 @@
                             </div>
                         </div>
                     </div>
-                    <a href="#contact" class="cta-button animate-on-scroll scroll-link">Offrir Votre Propre Écho</a>
+                    <!-- BOUTON "Offrir Votre Propre Écho" SUPPRIMÉ -->
                 </div>
             </section>
 
-         
+            <!-- SECTION CONTACT SUPPRIMÉE -->
 
             <footer id="footer-main"> 
                 <div class="footer-content">
@@ -207,7 +207,7 @@
                         <span>Nova Lux</span>
                     </a>
                     <div class="social-media-footer">
-                        
+                        <!-- Liens sociaux futurs ici -->
                     </div>
                     <p>© <span id="currentYear"></span> Nova Lux. Nous sommes tous liés.</p>
                     <p class="email-contact">Échangeons : <a href="mailto:contact@novalux-experience.com">contact@novalux-experience.com</a> </p>
