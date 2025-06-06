@@ -1,0 +1,228 @@
+/* Styles spécifiques pour la page challenge.html */
+:root {
+    /* Rappel des variables principales de style.css pour usage ici si besoin */
+    --nl-gold: #DAA520;
+    --nl-gold-dark: #b8860b;
+    --nl-light: #FBF9F6;
+    --nl-dark-text: #2A2A2A;
+    --nl-medium-text: #5C5C5C;
+    --nl-dark-bg: #121212; 
+    --nl-light-text-on-dark: #f0f0f0;
+
+    --font-main: 'Roboto', sans-serif;
+    --font-headings: 'Playfair Display', serif;
+    --transition-medium: 0.3s ease-in-out;
+    --transition-page-fade: 0.5s ease-in-out;
+}
+
+body.challenge-page {
+    background-color: var(--nl-dark-bg);
+    color: var(--nl-light-text-on-dark);
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: var(--font-main);
+    overflow: hidden; 
+    text-align: center;
+    padding: 1rem; 
+    box-sizing: border-box;
+}
+
+#challenge-container {
+    max-width: 700px;
+    width: 100%;
+    padding: 2rem 1rem;
+    position: relative; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; 
+    /* z-index: 10; Pas nécessaire si la vidéo n'est plus en overlay absolu */
+}
+
+.challenge-step {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    transition: opacity var(--transition-page-fade), visibility var(--transition-page-fade); 
+    width: 100%; 
+    max-width: 600px; 
+    background-color: rgba(30,30,30,0.7); 
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    box-sizing: border-box;
+}
+
+.challenge-step.active {
+    opacity: 1;
+    visibility: visible;
+    position: relative; 
+    transform: translate(0,0); 
+    top: auto; left: auto;
+}
+
+/* Styles pour l'étape qui CONTIENT la vidéo maintenant */
+.video-player-step {
+    background-color: transparent; /* Pas de fond pour l'étape elle-même */
+    box-shadow: none;
+    padding-top: 1rem; /* Un peu d'espace au-dessus du texte d'instruction */
+    width: 100%;
+    max-width: 90vw; /* Permettre à la vidéo de prendre plus de largeur */
+}
+@media (min-width: 768px) {
+    .video-player-step {
+        max-width: 800px; /* Limiter la largeur sur les grands écrans */
+    }
+}
+
+.video-instruction-text {
+    font-size: 1rem;
+    color: var(--nl-light-text-on-dark);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto; /* Centrer le wrapper */
+    background-color: #000; /* Fond noir si l'iframe met du temps à charger */
+    border-radius: 8px; /* Optionnel: arrondir les coins du conteneur vidéo */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0; /* Important */
+}
+
+/* Styles pour les boutons sous la vidéo */
+.video-actions {
+    margin-top: 2rem; /* Espace après la vidéo */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+@media (min-width: 520px) {
+    .video-actions {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+}
+
+
+.back-to-home-link {
+    display: block;
+    margin-bottom: 1rem;
+}
+.challenge-logo {
+    width: 70px;
+    height: auto;
+    margin: 0 auto 1rem;
+    opacity: 0.8;
+    transition: opacity var(--transition-medium);
+}
+.back-to-home-link:hover .challenge-logo {
+    opacity: 1;
+}
+
+.challenge-title, .challenge-instruction {
+    font-family: var(--font-headings);
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    color: var(--nl-gold);
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+.challenge-instruction {
+    color: var(--nl-light);
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.challenge-text {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    color: #ddd; 
+}
+
+.challenge-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600; 
+    text-align: center;
+    transition: all var(--transition-medium);
+    font-size: 0.95rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark));
+    color: var(--nl-dark-bg); 
+    text-decoration: none;
+}
+.challenge-button:hover {
+    background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold));
+    color: #000; 
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(218, 165, 32, 0.4);
+}
+.challenge-button.secondary {
+    background: transparent;
+    border-color: var(--nl-gold);
+    color: var(--nl-gold);
+}
+.challenge-button.secondary:hover {
+    background-color: var(--nl-gold);
+    color: var(--nl-dark-bg);
+}
+
+/* Animation Respiration */
+.breathing-animation {
+    margin: 1.5rem auto 2.5rem;
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+.breathing-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgba(218, 165, 32, 0.2); 
+    border: 2px solid rgba(218, 165, 32, 0.5);
+    animation: breath 5s infinite ease-in-out;
+    position: absolute;
+}
+.breathing-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--nl-light-text-on-dark);
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+@keyframes breath {
+    0%, 100% { transform: scale(0.85); opacity: 0.7; }
+    50% { transform: scale(1); opacity: 1; }
+}
+
+/* Les styles pour #video-player-container, #youtube-player-div, body.video-fullscreen-active, 
+   .challenge-step.video-step (placeholder) et .video-loading-message ne sont plus nécessaires. */
