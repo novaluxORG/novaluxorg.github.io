@@ -20,17 +20,25 @@
 
 /* --- Réinitialisation et Base --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; }
+html { 
+    font-size: 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+    display: none;
+}
+
 body {
     font-family: var(--font-main);
     line-height: 1.7;
     color: var(--nl-medium-text);
     background-color: var(--nl-dark-bg);
-    overflow-x: hidden;
+    overflow: hidden; 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-body.no-scroll { overflow: hidden; }
+body.no-scroll { overflow: hidden; } 
 body.loading { overflow: hidden; }
 
 /* --- Loader --- */
@@ -65,7 +73,7 @@ h1, h2, .section-title {
 
 p { font-weight: 400; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--nl-light-text-on-dark); max-width: 750px; margin-left:auto; margin-right:auto;}
 .content-section.appel-section p,
-.content-section.phare-section p,
+/* .content-section.phare-section p, /* Retiré car géré plus spécifiquement */
 .content-section.invitation-section p {
     color: var(--nl-medium-text);
 }
@@ -178,54 +186,63 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     visibility: visible;
 }
 
-
 /* --- Sections Générales --- */
 .panel {
-    /* min-height: 100vh; */ /* Suppression pour permettre hauteur naturelle, gérée par le contenu ou .fullscreen-section */
+    height: 100dvh; 
+    width: 100vw;   
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    position: relative; 
+    overflow: hidden; 
+    padding: 0 5%; 
+    box-sizing: border-box;
+}
+
+.section-content-wrapper {
+    max-width: 900px; 
     width: 100%;
-    display: flex;
-    align-items: flex-start; /* Pour que le contenu long commence en haut */
-    justify-content: center;
+    text-align: center;
     position: relative;
-    overflow: hidden; /* Important pour le fonctionnement du pin et pour éviter les débordements inattendus */
+    z-index: 2;
+    padding-top: var(--header-height); 
+    padding-bottom: 2rem; 
+    max-height: calc(100dvh - var(--header-height) - 2rem); 
+    overflow-y: auto; 
+    scrollbar-width: none; 
+    -ms-overflow-style: none;  
 }
-.fullscreen-section { /* Pour le Héro qui doit rester plein écran */
-    height: 100vh; /* Forcer plein écran */
-    display: flex;
-    align-items: center; /* Re-centrer verticalement pour le héro */
-    justify-content: center;
-    padding-top: var(--header-height); /* Espace pour le header fixe */
-    padding-bottom: 2rem;
-    padding-left: 5%;
-    padding-right: 5%;
+.section-content-wrapper::-webkit-scrollbar { 
+    display: none;
 }
-.content-section { /* Pour les autres sections, la hauteur est déterminée par le contenu */
-    padding: 6rem 5% 4rem; /* Padding vertical généreux */
-    width: 100%; /* Assurer pleine largeur */
+.no-header-padding .section-content-wrapper {
+    padding-top: 2rem; 
+    max-height: calc(100dvh - 4rem); 
 }
 
 .appel-section, .phare-section, .invitation-section, #temoignages {
     background-color: var(--nl-light);
 }
+
 .appel-section .section-title, .appel-section p,
-.phare-section .section-title, .phare-section blockquote .quote-text, .phare-section blockquote .quote-author,
+.phare-section .section-title, /* Styles spécifiques pour texte de phare ci-dessous */
 .invitation-section .section-title, .invitation-section p,
 #temoignages .section-title, #temoignages .section-intro, #temoignages .testimonial-name, #temoignages .testimonial-quote {
     color: var(--nl-dark-text);
 }
-.phare-section blockquote::before, .phare-section blockquote::after {
-    color: var(--nl-gold);
-}
+/* .phare-section blockquote::before, .phare-section blockquote::after { /* Retiré car guillemets redessinés */
+/*    color: var(--nl-gold); */
+/* } */
 
-
-.section-content-wrapper { max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 2; width: 100%;}
 .dark-accent-section { background-color: var(--nl-dark-bg); color: var(--nl-light-text-on-dark); }
 .dark-accent-section .section-title, .dark-accent-section h3 { color: var(--nl-light); }
 .dark-accent-section p { color: #ccc; }
 .dark-accent-section .cta-button-secondary { border-color: var(--nl-gold); color: var(--nl-gold); }
 .dark-accent-section .cta-button-secondary:hover { background-color: var(--nl-gold); color: var(--nl-dark-bg); }
-.image-bg-section { background-size: cover; background-position: center center; background-attachment: fixed; color: var(--nl-light-text-on-dark); }
-.image-bg-section .image-bg-overlay{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 18, 18, 0.75); z-index: 1; }
+.image-bg-section { background-size: cover; background-position: center center; color: var(--nl-light-text-on-dark); }
+.image-bg-section .image-bg-overlay{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(18, 18, 18, 0.75); z-index: 1; } 
+.image-bg-section .section-content-wrapper { z-index: 3;  }
 .image-bg-section .section-title { color: var(--nl-light); }
 .image-bg-section p { color: #e0e0e0; }
 
@@ -237,6 +254,20 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 }
 
 /* --- Section 1: HERO PORTAIL --- */
+#hero-portail {
+    padding-left: 0; 
+    padding-right: 0;
+}
+#hero-portail .section-content-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: none; 
+    overflow: visible;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    height: 100%; 
+}
 .hero-section .video-background-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: hidden; }
 .hero-section .video-iframe { width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .hero-section .hero-video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%); z-index: 2; }
@@ -245,52 +276,136 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .hero-title span { display: inline-block; opacity: 0; transform: translateY(50px); }
 .hero-subtitle { font-size: clamp(1.2rem, 3vw, 1.8rem); color: rgba(251, 249, 246, 0.9); margin-bottom: 2.5rem; font-weight: 300; text-shadow: 1px 1px 4px rgba(0,0,0,0.5); opacity: 0; transform: translateY(20px); }
 .hero-cta { opacity: 0; transform: scale(0.8); }
-.scroll-indicator-wrapper { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 3; opacity: 0; }
+.scroll-indicator-wrapper { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 3; opacity: 0; } 
 .scroll-indicator svg .scroll-indicator-dot { animation: scrollAnim 2s infinite; }
 @keyframes scrollAnim { 0% { transform: translateY(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(16px); opacity: 0; } }
 
 /* --- Section 2: APPEL --- */
 .appel-section .appel-text-container { margin-bottom: 2rem; }
 .appel-section .appel-text-container p {
-    line-height: 1.4;
+    line-height: 1.4; 
     margin-bottom: 1.2rem;
 }
-.appel-icon { width: 70px; height: 70px; margin: 2rem auto 0; opacity: 0.8; }
+.appel-icon { width: 70px; height: 70px; margin: 1.5rem auto 0; opacity: 0.8; } 
 
-/* --- Section 3: DÉFI RÉVÉLATEUR --- */
+/* --- Section 3: DÉFI RÉVÉLATEUR (NOVA LUX CHALLENGE) --- */
+.defi-section .section-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    padding-top: calc(var(--header-height) + 1vh);
+    padding-bottom: 2vh;
+    overflow: hidden;
+}
+.defi-section .section-title {
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    margin-bottom: 1vh;
+    flex-shrink: 0;
+}
+.defi-section .sub-title-gold {
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    margin-bottom: 1vh;
+    flex-shrink: 0;
+}
+.defi-section .section-content-wrapper > p.text-flow {
+    font-size: clamp(0.9rem, 2.2vw, 1rem);
+    line-height: 1.6;  
+    margin-bottom: 1.5vh; 
+    max-width: 650px;
+    flex-shrink: 0;
+}
 .defi-section .video-challenge-container {
-    margin: 2.5rem auto;
-    max-width: 320px;
+    margin-top: 1.5vh; 
+    margin-bottom: 2vh; 
+    width: clamp(220px, 40vw, 280px);
     aspect-ratio: 9 / 16;
-    border-radius: 12px;
+    border-radius: 12px; 
     overflow: hidden;
     box-shadow: var(--shadow-lg);
     border: 3px solid var(--nl-gold-dark);
+    flex-shrink: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .defi-section .video-challenge-container iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
-
-/* --- Section 4: PHARE --- */
-.phare-section .phare-image-container {
-    margin-bottom: 2.5rem;
-    margin-top: 0;
+.defi-section .cta-button-secondary {
+    margin-top: 1.5vh;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.9rem; 
+    flex-shrink: 0;
 }
-.profile-section .profile-pic { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; margin: 0 auto; border: 6px solid var(--nl-light); box-shadow: 0 0 0 8px var(--nl-gold), var(--shadow-lg); }
-.profile-section blockquote { max-width: 700px; margin: 1.5rem auto 0; font-family: var(--font-headings); font-style: italic; font-size: 1.4rem; position: relative; padding: 0 2rem; }
-.profile-section blockquote::before, .profile-section blockquote::after { content: "“"; font-size: 5rem; opacity: 0.2; position: absolute; line-height: 1; }
-.profile-section blockquote::before { top: -1rem; left: -1rem; }
-.profile-section blockquote::after { content: "”"; bottom: -2rem; right: -1rem; }
-.profile-section .quote-text { margin-bottom: 1.2rem; font-size: 1.15rem; line-height: 1.6; }
-.profile-section .quote-author { display: block; text-align: right; font-size: 1.1rem; font-style: normal; color: var(--nl-gold-dark); }
+
+/* --- Section 4: PHARE (Design Amélioré) --- */
+.phare-section .phare-image-container {
+    margin-bottom: 2.5rem; /* Plus d'espace sous l'image */
+    margin-top: 1rem; /* Espace au-dessus si nécessaire */
+    display: flex;
+    justify-content: center;
+}
+.phare-section .profile-pic { 
+    width: 170px; /* Légèrement plus grande pour plus d'impact */
+    height: 170px; 
+    border-radius: 50%;
+    border: 6px solid var(--nl-gold); /* Bordure dorée plus affirmée */
+    box-shadow: 0 0 30px rgba(218, 165, 32, 0.5), /* Halo doré plus prononcé */
+                0 4px 15px rgba(0,0,0,0.15); /* Ombre portée raffinée */
+    object-fit: cover;
+}
+.phare-section blockquote { 
+    font-style: italic;
+    color: var(--nl-dark-text);
+    padding: 1rem 0; /* Padding vertical */
+    margin-top: 2rem; /* Plus d'espace au-dessus de la citation */
+    position: relative;
+    max-width: 700px; /* Légèrement plus large pour un texte aéré */
+    margin-left: auto;
+    margin-right: auto;
+    border-left: 4px solid var(--nl-gold-dark); /* Ligne dorée à gauche, plus foncée pour contraste */
+    padding-left: 2.5rem; /* Espace conséquent après la ligne */
+    text-align: left; /* Texte de la citation aligné à gauche */
+}
+/* Suppression des anciens guillemets via ::before et ::after */
+.phare-section blockquote::before, 
+.phare-section blockquote::after { 
+    content: ""; 
+    display: none;
+}
+.phare-section .quote-text { 
+    font-size: 1.1rem; /* Taille de police confortable */
+    line-height: 1.75; 
+    margin-bottom: 1.5rem; /* Espace entre les paragraphes de la citation */
+    color: var(--nl-medium-text); 
+}
+.phare-section .quote-text:last-of-type {
+    margin-bottom: 0; 
+}
+.phare-section .quote-author { 
+    display: block; 
+    margin-top: 2rem; /* Bel espace au-dessus de la signature */
+    font-family: var(--font-headings); 
+    font-weight: 600; /* Un peu de graisse pour la lisibilité */
+    font-size: 1.15rem; /* Taille de la signature */
+    color: var(--nl-dark-text);
+    text-align: right; 
+    padding-right: 1rem; /* Aligner avec le texte de la citation à droite */
+    font-style: normal; /* Pas d'italique pour la signature, pour contraster avec la citation */
+}
+.phare-section .quote-author::before {
+    content: "— "; 
+    color: var(--nl-gold); 
+    font-weight: 600; /* Tiret en gras également */
+}
 
 /* --- Section 5: CONSTELLATION --- */
 .constellation-section { background-image: url('images/community-novalux.jpg'); }
 .constellation-section #particles-js { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-.constellation-section .image-bg-overlay { background-color: rgba(10, 10, 12, 0.85); z-index: 2; }
-.constellation-section .section-content-wrapper { z-index: 3; }
 
 /* --- Section 6: NOTRE VOIE --- */
 .invitation-section p {
@@ -303,19 +418,19 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 3rem;
-    font-size: 1.1rem;
-    line-height: 1.7;
+    margin-bottom: 2rem; 
+    font-size: 1rem; 
+    line-height: 1.6;
 }
 .testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
-    margin-top: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 1.5rem; 
+    margin-top: 2rem; 
 }
 .testimonial-item {
     background-color: #fff;
-    border-radius: 12px;
+    border-radius: 10px; 
     box-shadow: var(--shadow-md);
     overflow: hidden;
     display: flex;
@@ -323,7 +438,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 }
 .testimonial-video-container {
     position: relative;
-    padding-bottom: 56.25%;
+    padding-bottom: 56.25%; 
     height: 0;
     overflow: hidden;
     background-color: #000;
@@ -338,61 +453,38 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     border: 0;
 }
 .testimonial-content {
-    padding: 1.5rem;
+    padding: 1.2rem; 
     text-align: left;
     flex-grow: 1;
 }
 .testimonial-name {
-    font-family: var(--font-headings);
-    font-size: 1.3rem;
-    color: var(--nl-gold-dark);
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem; 
+    margin-bottom: 0.4rem; 
 }
 .testimonial-quote {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-.testimonial-quote::before {
-    content: "« ";
-    opacity: 0.6;
-    color: var(--nl-medium-text);
-}
-.testimonial-quote::after {
-    content: " »";
-    opacity: 0.6;
-    color: var(--nl-medium-text);
+    font-size: 0.9rem; 
+    line-height: 1.5;
 }
 #temoignages .cta-button {
-    margin-top: 3rem;
-    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark));
-    color: var(--nl-light);
-}
-#temoignages .cta-button:hover {
-    background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold));
-    color: #fff;
+    margin-top: 2rem; 
 }
 
 /* --- Section 8: CONTACT --- */
-.contact-section {
-    padding-top: 6rem;
-    padding-bottom: 8rem;
+.contact-intro { 
+    font-size: 1rem; 
+    margin-bottom: 2rem; 
 }
-.contact-intro { font-size: 1.1rem; max-width: 700px; margin-left: auto; margin-right: auto; margin-bottom: 3rem; }
 .contact-form { max-width: 700px; margin: 0 auto; text-align: left; }
-.form-group { margin-bottom: 2rem; position: relative; }
-.form-label { display: block; font-family: var(--font-main); font-weight: 500; color: var(--nl-gold); margin-bottom: 0.75rem; font-size: 0.95rem; transition: all 0.3s ease; }
+.form-group { margin-bottom: 1.5rem; position: relative; } 
+.form-label { font-size: 0.9rem; margin-bottom: 0.5rem;} 
 .form-input, .form-textarea {
-    width: 100%; padding: 1rem 1.2rem; border: 1px solid rgba(218, 165, 32, 0.3);
-    border-radius: 8px; background-color: rgba(255, 255, 255, 0.05);
-    color: var(--nl-light-text-on-dark); font-family: var(--font-main); font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease; outline: none;
+    padding: 0.8rem 1rem; 
+    font-size: 0.95rem; 
 }
-.form-input::placeholder, .form-textarea::placeholder { color: rgba(240, 240, 240, 0.4); font-style: italic; }
-.form-input:focus, .form-textarea:focus { border-color: var(--nl-gold); box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.2); }
-.form-textarea { resize: vertical; min-height: 120px; }
-.form-submit-group { text-align: center; margin-top: 2.5rem; }
-.form-submit-button { min-width: 200px; position: relative; }
+.form-textarea { min-height: 100px; } 
+.form-submit-group { margin-top: 2rem; } 
+
+.form-submit-button { min-width: 180px; position: relative; }
 .form-submit-button .button-text, .form-submit-button .button-icon-sending, .form-submit-button .button-icon-success { display: inline-block; vertical-align: middle; transition: opacity 0.3s, transform 0.3s; }
 .form-submit-button .button-icon-sending, .form-submit-button .button-icon-success { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0; pointer-events: none; }
 .form-submit-button .button-icon-sending svg, .form-submit-button .button-icon-success svg { width: 24px; height: 24px; }
@@ -404,9 +496,7 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
 .spinner .path { stroke: var(--nl-light); stroke-linecap: round; animation: dash 1.5s ease-in-out infinite; }
 @keyframes rotate { 100% { transform: rotate(360deg); } }
 @keyframes dash { 0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; } }
-.form-status { text-align: center; margin-top: 1.5rem; font-size: 0.95rem; height: 20px; }
-.form-status.success { color: var(--nl-gold); }
-.form-status.error { color: #ff6b6b; }
+.form-status { text-align: center; margin-top: 1.2rem; font-size: 0.9rem; height: 18px; }
 
 
 /* --- Boutons CTA --- */
@@ -415,31 +505,48 @@ nav { display: flex; justify-content: space-between; align-items: center; width:
     transition: all var(--transition-medium); font-size: 1rem; cursor: pointer; letter-spacing: 0.8px;
     text-transform: uppercase; border: 2px solid transparent; box-shadow: var(--shadow-sm); margin-top: 1rem;
 }
-.cta-button { background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark)); color: var(--nl-light); }
-.cta-button:hover { background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold)); color: #fff; transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow-md); }
+/* Spécificité pour les boutons qui sont des liens afin d'assurer la couleur du texte */
+a.cta-button {
+    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark)); /* Fond doré */
+    color: var(--nl-light) !important; /* Texte clair, important pour surcharger couleur de lien par défaut */
+    border: 2px solid var(--nl-gold);
+}
+a.cta-button:hover { 
+    background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold)); 
+    color: #fff !important; /* Texte blanc au survol */
+    transform: translateY(-3px) scale(1.03); 
+    box-shadow: var(--shadow-md); 
+}
+
+.cta-button:not(a) { /* Style pour les <button> qui ont la classe cta-button */
+    background: linear-gradient(135deg, var(--nl-gold), var(--nl-gold-dark));
+    color: var(--nl-light);
+    border: 2px solid var(--nl-gold);
+}
+.cta-button:not(a):hover {
+     background: linear-gradient(135deg, var(--nl-gold-dark), var(--nl-gold)); 
+    color: #fff; 
+    transform: translateY(-3px) scale(1.03); 
+    box-shadow: var(--shadow-md);
+}
+
+
 .cta-button-secondary { background-color: transparent; color: var(--nl-gold); border: 2px solid var(--nl-gold); }
 .cta-button-secondary:hover { background-color: var(--nl-gold); color: var(--nl-dark-bg); transform: translateY(-3px) scale(1.03); box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3); }
 
 /* --- Footer --- */
 footer {
     background-color: var(--nl-dark-bg);
-    color: #a0a0a0; padding: 4rem 5% 2rem; text-align: center;
-    position: relative; z-index: 5;
+    color: #a0a0a0; padding: 3rem 5% 1.5rem; text-align: center; 
+    position: relative; z-index: 5; 
 }
 .footer-content { max-width: 1200px; margin: 0 auto; }
-.footer-logo { display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-.footer-logo img {
-    height: 45px;
-    margin-right: 0.5rem;
-}
-.footer-logo span { font-family: var(--font-headings); font-size: 1.5rem; color: var(--nl-light); }
-.social-media-footer { margin-bottom: 1.5rem; }
-.social-media-footer a { margin: 0 0.7rem; display: inline-block; }
-.social-media-footer img { height: 24px; width: 24px; opacity: 0.6; transition: opacity var(--transition-medium), transform var(--transition-fast); }
-.social-media-footer img:hover { opacity: 1; transform: scale(1.1); }
-footer p { font-size: 0.9rem; color: #888; margin-top: 0.5rem; margin-bottom: 0; }
-footer .email-contact a { color: var(--nl-subtle-gray); }
-footer .email-contact a:hover { color: var(--nl-gold); }
+.footer-logo { margin-bottom: 1rem; } 
+.footer-logo img { height: 40px; } 
+.footer-logo span { font-size: 1.4rem; } 
+.social-media-footer { margin-bottom: 1rem; } 
+.social-media-footer img { height: 22px; width: 22px; } 
+footer p { font-size: 0.85rem; margin-top: 0.4rem;} 
 
 
 /* --- Media Queries --- */
@@ -454,51 +561,44 @@ footer .email-contact a:hover { color: var(--nl-gold); }
     .logo img {
         height: 40px;
     }
-    .content-section {
-        padding: 4rem 5% 3rem; /* Réduire padding vertical sur tablette */
-    }
-    .fullscreen-section {
-        padding-top: var(--header-height);
-    }
-    .defi-section .video-challenge-container {
-        max-width: 280px;
-    }
 }
 @media (max-width: 768px) {
     html { font-size: 15px; }
     #site-header { padding: 0 3%;}
     .hero-title { font-size: clamp(2.8rem, 10vw, 5rem); }
     .hero-subtitle { font-size: clamp(1rem, 3vw, 1.5rem); }
-    .content-section { padding: 3rem 5% 2.5rem; } /* Moins de padding sur mobile */
-    .fullscreen-section { padding-top: var(--header-height); }
     .cta-button, .cta-button-secondary { padding: 0.8rem 1.8rem; font-size: 0.9rem; }
-    .profile-pic { width: 160px; height: 160px; }
+    
+    .phare-section .profile-pic { width: 150px; height: 150px; } /* Ajustement pour mobile */
+    .phare-section blockquote { padding-left: 1.5rem; max-width: 90%; } /* Ajustement pour mobile */
     .testimonials-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem; 
     }
      #temoignages .section-intro {
-        font-size: 1rem;
+        font-size: 0.95rem; 
     }
+    .defi-section .section-title { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+    .defi-section .sub-title-gold { font-size: clamp(1.1rem, 2.8vw, 1.4rem); }
+    .defi-section .section-content-wrapper > p.text-flow { font-size: clamp(0.85rem, 2vw, 0.95rem); }
     .defi-section .video-challenge-container {
-        max-width: 240px;
-        margin: 2rem auto;
+        width: clamp(200px, 50vw, 260px); 
     }
+    .defi-section .cta-button-secondary { padding: 0.7rem 1.6rem; font-size: 0.85rem; }
 }
 @media (max-width: 480px) {
     .logo-text { font-size: 1.4rem; }
     .logo img { height: 35px; }
     .mobile-nav-links { max-width: 100%;}
-    .section-content-wrapper { padding-left: 2%; padding-right: 2%;}
-    p { font-size: 1rem; }
+
+    p { font-size: 1rem; } 
     .appel-section .appel-text-container p,
     .invitation-section p,
-    .dark-accent-section p,
+    .dark-accent-section p:not(.defi-section p), 
     .image-bg-section p {
-        font-size: clamp(0.95rem, 3.5vw, 1.05rem);
+        font-size: clamp(0.9rem, 3.5vw, 1rem); 
     }
-    .defi-section .video-challenge-container {
-        max-width: 220px;
-    }
-    .content-section { padding: 2.5rem 5% 2rem; }
+    .phare-section .profile-pic { width: 130px; height: 130px; } /* Ajustement pour très petit mobile */
+    .phare-section .quote-text { font-size: 1rem; }
+    .phare-section .quote-author { font-size: 1rem; }
 }
