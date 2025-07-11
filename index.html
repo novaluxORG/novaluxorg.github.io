@@ -193,6 +193,179 @@
         .reveal-item { opacity: 0; transform: translateY(30px); transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal-item.is-inview { opacity: 1; transform: translateY(0); }
         
+        /* --- GLITCH EFFECT --- */
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            z-index: 10000;
+            display: none;
+            pointer-events: none;
+        }
+
+        .glitch-overlay.active {
+            display: block;
+            pointer-events: all;
+            animation: glitchStatic 0.3s infinite;
+        }
+
+        @keyframes glitchStatic {
+            0%, 100% { background: var(--black); }
+            10% { background: #ff0000; }
+            30% { background: #00ff00; }
+            50% { background: #0000ff; }
+            70% { background: #ffffff; }
+            90% { background: var(--black); }
+        }
+
+        .glitch-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10001;
+            text-align: center;
+            display: none;
+        }
+
+        .glitch-content.active {
+            display: block;
+        }
+
+        .glitch-text {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 800;
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            text-shadow: 
+                2px 2px 0 #00ff00,
+                -2px -2px 0 #0000ff,
+                0 0 20px rgba(255, 0, 0, 0.8);
+            animation: glitchText 0.5s infinite alternate;
+        }
+
+        @keyframes glitchText {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-button {
+            display: inline-block;
+            padding: 20px 60px;
+            background: #ff0000;
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            border: 3px solid var(--white);
+            position: relative;
+            overflow: hidden;
+            animation: glitchButton 0.3s infinite;
+        }
+
+        @keyframes glitchButton {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-1deg); }
+            50% { transform: scale(0.95) rotate(1deg); }
+            75% { transform: scale(1.05) rotate(-0.5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .glitch-button::before {
+            content: 'CLIQUE CLIQUE CLIQUE';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            color: #ff0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slideGlitch 2s infinite linear;
+        }
+
+        @keyframes slideGlitch {
+            to { left: 100%; }
+        }
+
+        /* Glitch effect on main content */
+        body.glitching * {
+            animation: contentGlitch 0.2s infinite;
+        }
+
+        @keyframes contentGlitch {
+            0%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-5px, 0); filter: hue-rotate(90deg); }
+            40% { transform: translate(5px, 0); filter: hue-rotate(180deg); }
+            60% { transform: translate(0, -5px); filter: hue-rotate(270deg); }
+            80% { transform: translate(0, 5px); filter: hue-rotate(360deg); }
+        }
+
+        body.glitching .heading-xl,
+        body.glitching .heading-lg,
+        body.glitching .heading-md {
+            animation: textCorruption 0.5s infinite;
+        }
+
+        @keyframes textCorruption {
+            0%, 100% { 
+                text-shadow: 
+                    2px 2px 0 #ff0000,
+                    -2px -2px 0 #00ff00,
+                    0 0 10px rgba(255, 0, 0, 0.8);
+            }
+            50% { 
+                text-shadow: 
+                    -5px 5px 0 #00ff00,
+                    5px -5px 0 #ff0000,
+                    0 0 20px rgba(0, 255, 0, 0.8);
+            }
+        }
+
+        /* ASCII rain effect */
+        .ascii-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            overflow: hidden;
+            display: none;
+        }
+
+        .ascii-rain.active {
+            display: block;
+        }
+
+        .ascii-drop {
+            position: absolute;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 20px;
+            animation: drop 2s linear infinite;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        @keyframes drop {
+            to { transform: translateY(100vh); }
+        }
+        
         /* --- RESPONSIVE --- */
         @media (max-width: 900px) {
             .appel-grid { grid-template-columns: 1fr; gap: 60px; } 
@@ -337,7 +510,7 @@
                         </div>
                     </div>
                     <div class="reveal-item" style="transition-delay: 0.2s">
-                         <img src="images/images2.png" alt="Nova Lux - Le monde est beau" style="width: 100%; height: auto; border-radius: 20px; transform: rotate(2deg);">
+                         <img src="images/gif.gif" alt="Nova Lux - Le monde est beau" style="width: 100%; height: auto; border-radius: 20px; transform: rotate(2deg);">
                     </div>
                 </div>
             </div>
@@ -440,6 +613,26 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Glitch Overlay -->
+    <div class="glitch-overlay" id="glitch-overlay"></div>
+    <div class="glitch-content" id="glitch-content">
+        <div class="glitch-text">
+            ACHÈTE MON LIVRE.<br>
+            CLIQUE.<br>
+            TU VEUX COMPRENDRE.<br>
+            UN ROMAN QUI PARLE DE SECTE.<br>
+            D'IA (PAR UN VRAI EXPERT).<br>
+            TU N'AS JAMAIS LU ÇA.<br>
+            CLIQUE.<br>
+            MAINTENANT.<br>
+            TOUT DE SUITE.
+        </div>
+        <a href="https://www.amazon.fr/dp/B0D9S5QDF8" target="_blank" class="glitch-button" id="glitch-button">
+            ACHÈTE MAINTENANT
+        </a>
+    </div>
+    <div class="ascii-rain" id="ascii-rain"></div>
     
     <!-- Library Scripts -->
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
@@ -828,7 +1021,119 @@
                 }
                 animateTrail();
             }
-        });
-    </script>
+
+            // --- GLITCH EFFECT AT END ---
+            let hasGlitched = false;
+            const glitchTriggerOffset = 200; // Distance from bottom to trigger
+
+            function checkScrollEnd() {
+                const scrollPosition = window.pageYOffset + window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                
+                if (!hasGlitched && scrollPosition >= documentHeight - glitchTriggerOffset) {
+                    triggerGlitch();
+                    hasGlitched = true;
+                }
+            }
+
+            function triggerGlitch() {
+                const body = document.body;
+                const glitchOverlay = document.getElementById('glitch-overlay');
+                const glitchContent = document.getElementById('glitch-content');
+                const asciiRain = document.getElementById('ascii-rain');
+                
+                // Start glitching effect
+                body.classList.add('glitching');
+                
+                // Create ASCII rain
+                createAsciiRain();
+                asciiRain.classList.add('active');
+                
+                // Flash and corruption sequence
+                setTimeout(() => {
+                    glitchOverlay.classList.add('active');
+                    
+                    // Strobe effect
+                    let strobeCount = 0;
+                    const strobeInterval = setInterval(() => {
+                        glitchOverlay.style.display = strobeCount % 2 === 0 ? 'block' : 'none';
+                        strobeCount++;
+                        
+                        if (strobeCount > 10) {
+                            clearInterval(strobeInterval);
+                            glitchOverlay.style.display = 'block';
+                            
+                            // Show final message
+                            setTimeout(() => {
+                                glitchContent.classList.add('active');
+                                body.classList.remove('glitching');
+                                asciiRain.classList.remove('active');
+                                
+                                // Add continuous glitch to button
+                               const glitchButton = document.getElementById('glitch-button');
+                               setInterval(() => {
+                                   glitchButton.style.transform = `scale(${0.95 + Math.random() * 0.1}) rotate(${(Math.random() - 0.5) * 2}deg)`;
+                               }, 100);
+                               
+                           }, 500);
+                       }
+                   }, 100);
+                   
+               }, 2000);
+               
+               // Corrupt existing text
+               corruptText();
+           }
+
+           function createAsciiRain() {
+               const asciiRain = document.getElementById('ascii-rain');
+               const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+               
+               for (let i = 0; i < 50; i++) {
+                   const drop = document.createElement('div');
+                   drop.className = 'ascii-drop';
+                   drop.style.left = Math.random() * 100 + '%';
+                   drop.style.animationDelay = Math.random() * 2 + 's';
+                   drop.style.animationDuration = (2 + Math.random() * 3) + 's';
+                   drop.textContent = chars[Math.floor(Math.random() * chars.length)];
+                   asciiRain.appendChild(drop);
+               }
+           }
+
+           function corruptText() {
+               const textElements = document.querySelectorAll('.heading-xl, .heading-lg, .heading-md, .body-text');
+               const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
+               
+               textElements.forEach(element => {
+                   const originalText = element.textContent;
+                   let glitchInterval = setInterval(() => {
+                       let corruptedText = '';
+                       for (let i = 0; i < originalText.length; i++) {
+                           if (Math.random() > 0.7) {
+                               corruptedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                           } else {
+                               corruptedText += originalText[i];
+                           }
+                       }
+                       element.textContent = corruptedText;
+                   }, 50);
+                   
+                   // Stop corruption after 2 seconds
+                   setTimeout(() => {
+                       clearInterval(glitchInterval);
+                       element.textContent = originalText;
+                   }, 2000);
+               });
+           }
+
+           // Add scroll listener
+           window.addEventListener('scroll', checkScrollEnd);
+
+           // Prevent scrolling when glitch is active
+           document.getElementById('glitch-content').addEventListener('wheel', (e) => {
+               e.preventDefault();
+           });
+       });
+   </script>
 </body>
 </html>
