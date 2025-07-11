@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Lux - Le Défi</title>
+    <meta name="description" content="Participe au Défi Nova Lux et connecte-toi à ta lumière intérieure.">
+    
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="apple-touch-icon" href="images/logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --off-white: #F3F3F3;
+            --black: #0A0A0A;
+            --white: #FFFFFF;
+            --gray: #888888;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--black);
+            color: var(--off-white);
+            line-height: 1.5; -webkit-font-smoothing: antialiased;
+            cursor: none; overflow: hidden; /* Prevent scrollbars */
+        }
+
+        /* --- PARTICLES & CURSOR --- */
+        #particle-trail-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .cursor, .cursor-follower { will-change: transform; pointer-events: none; }
+        .cursor { position: fixed; width: 32px; height: 32px; border: 1px solid var(--gray); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9999; transition: all 0.2s ease; }
+        .cursor-follower { position: fixed; width: 8px; height: 8px; background-color: var(--white); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9998; transition: transform 0.1s linear; mix-blend-mode: difference; }
+        body.cursor-hover .cursor { width: 64px; height: 64px; background-color: rgba(212, 175, 55, 0.5); border-color: transparent; }
+        
+        /* --- CHALLENGE CONTAINER & STEPS --- */
+        #challenge-container {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; width: 100%; padding: 40px; position: relative;
+        }
+        .challenge-step {
+            position: absolute; width: 100%; max-width: 800px; text-align: center;
+            opacity: 0; pointer-events: none; transform: scale(0.98);
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .challenge-step.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+
+        .challenge-logo { width: 50px; height: auto; margin-bottom: 24px; }
+        .challenge-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px; }
+        .challenge-instruction { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+        .challenge-text { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--gray); max-width: 45ch; margin: 0 auto 32px auto; }
+
+        /* --- BUTTONS --- */
+        .cta-button { display: inline-block; padding: 18px 40px; background: var(--gold); color: var(--black); text-decoration: none; font-weight: 600; font-size: 1.1rem; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: none; cursor: none; }
+        .cta-button:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); }
+        .cta-secondary { background: transparent; color: var(--gray); border: 1px solid var(--gray); }
+        .cta-secondary:hover { background: var(--white); color: var(--black); border-color: var(--white); box-shadow: none; }
+        
+        /* --- BREATHING ANIMATION --- */
+        .breathing-animation { position: relative; width: 200px; height: 200px; margin: 32px auto; display: flex; align-items: center; justify-content: center; }
+        .breathing-circle { width: 100%; height: 100%; border-radius: 50%; background: var(--gold); animation: breathe 8s ease-in-out infinite; }
+        .breathing-text { position: absolute; color: var(--black); font-weight: 500; }
+        @keyframes breathe { 0% { transform: scale(0.4); opacity: 0.4; } 50% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(0.4); opacity: 0.4; } }
+
+        /* --- BEAUTY WORD INPUT --- */
+        .input-instruction { font-size: 0.9rem; color: var(--gray); margin-top: 40px; margin-bottom: 10px;}
+        #beauty-word-input { background: transparent; border: none; border-bottom: 2px solid var(--gray); color: var(--white); font-size: 2rem; font-weight: 500; text-align: center; width: 100%; max-width: 400px; padding: 10px; outline: none; transition: border-color 0.3s ease; }
+        #beauty-word-input:focus { border-color: var(--gold); }
+
+        /* --- VIDEO STEP --- */
+        .video-section-title {
+            color: var(--gray);
+            font-weight: 400;
+            font-size: clamp(1.2rem, 3vw, 1.8rem); /* Taille de police adaptée */
+            margin-bottom: 32px;
+            transition: opacity 0.6s ease-in-out; /* Transition pour le fondu */
+            min-height: 1.5em; /* Empêche le saut de mise en page */
+        }
+        .video-wrapper {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #youtube-player { width: 100%; height: 100%; }
+        
+        .user-word-anchor {
+            margin-top: 24px;
+            font-size: 1.1rem;
+            color: var(--gray);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .user-word-anchor.visible { opacity: 1; transform: translateY(0); }
+        .user-word-anchor span {
+            font-style: italic;
+            color: var(--gold);
+            text-transform: capitalize;
+        }
+        
+        .final-actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+        .final-actions.visible { opacity: 1; transform: translateY(0); }
+
+    </style>
+</head>
+<body>
+    
+    <canvas id="particle-trail-canvas"></canvas>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <main id="challenge-container">
+        <!-- Étape 1: Introduction -->
+        <div class="challenge-step active" data-step="1">
+            <a href="index.html" class="back-to-home-link interactive" title="Retour à l'accueil Nova Lux">
+                <img src="images/logo.png" alt="Nova Lux" class="challenge-logo">
+            </a>
+            <h1 class="challenge-title">Nova Lux Challenge</h1>
+            <p class="challenge-text">Laisse-toi guider. Le seul clic nécessaire est celui-ci.</p>
+            <button id="start-challenge-btn" class="cta-button interactive">Commencer</button>
+        </div>
+
+        <!-- Étape 2: Détente -->
+        <div class="challenge-step" data-step="2">
+            <h2 class="challenge-instruction">Détends-toi</h2>
+            <p class="challenge-text">Prends un instant, juste pour toi. Rien d'autre n'a d'importance maintenant.</p>
+        </div>
+
+        <!-- Étape 3: Respiration -->
+        <div class="challenge-step" data-step="3">
+            <h2 class="challenge-instruction">Respire</h2>
+            <p class="challenge-text">Suis le rythme. Inspire quand le cercle grandit, expire quand il se rétracte.</p>
+            <div class="breathing-animation">
+                <div class="breathing-circle"></div>
+                <span class="breathing-text"></span>
+            </div>
+        </div>
+
+        <!-- Étape 4: Beauté -->
+        <div class="challenge-step" data-step="4">
+            <h2 class="challenge-instruction">La Beauté</h2>
+            <p class="challenge-text">Pense à une chose, une personne ou un souvenir qui incarne la beauté pour toi. Écris un seul mot pour le représenter.</p>
+            <form id="word-form">
+                <input type="text" id="beauty-word-input" placeholder="Ton mot ici..." autocomplete="off" required>
+                <p class="input-instruction">Appuie sur Entrée pour continuer</p>
+            </form>
+        </div>
+
+        <!-- Étape 5: Préparation -->
+        <div class="challenge-step" data-step="5">
+             <h2 class="challenge-instruction">Ton mot est ancré.</h2>
+             <p class="challenge-text">Maintenant, prépare-toi. Laisse la musique t'envelopper.</p>
+        </div>
+
+        <!-- Étape 6: VIDÉO -->
+        <div class="challenge-step" data-step="6">
+             <h2 class="challenge-instruction video-section-title" id="video-title-message">Ton Immersion Commence.</h2>
+            <div class="video-wrapper interactive">
+                <div id="youtube-player"></div>
+            </div>
+            <div class="user-word-anchor" id="user-word-anchor">
+                Ton mot d'ancrage : <span id="user-word-display"></span>
+            </div>
+            <div class="final-actions" id="final-actions">
+                 <a href="https://discord.gg/c9PgVsR5jX" target="_blank" class="cta-button interactive">J'ai Vibré !</a>
+                 <a href="index.html" class="cta-button cta-secondary interactive">Retour à l'Accueil</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ambianceAudio = new Audio('audio/ambiance.mp3');
+        ambianceAudio.volume = 0.3;
+        ambianceAudio.loop = true;
+        
+        function fadeOutAudio(audio, duration = 2000) {
+            const initialVolume = audio.volume;
+            const fadeStep = initialVolume / (duration / 50);
+            const fadeInterval = setInterval(() => {
+                if (audio.volume > fadeStep) {
+                    audio.volume -= fadeStep;
+                } else {
+                    audio.volume = 0;
+                    audio.pause();
+                    clearInterval(fadeInterval);
+                }
+            }, 50);
+        }
+
+        const startBtn = document.getElementById('start-challenge-btn');
+        const steps = document.querySelectorAll('.challenge-step');
+        const wordForm = document.getElementById('word-form');
+        const wordInput = document.getElementById('beauty-word-input');
+        const userWordAnchor = document.getElementById('user-word-anchor');
+        const userWordDisplay = document.getElementById('user-word-display');
+        const finalActions = document.getElementById('final-actions');
+        
+        let currentStepIndex = 0;
+        let userBeautyWord = '';
+        let ytPlayer;
+
+        // --- YOUTUBE API & TIMED MESSAGES ---
+        const videoTitleMessage = document.getElementById('video-title-message');
+        let messageInterval;
+        const defaultTitle = "Ton Immersion Commence.";
+
+        // Messages synchronisés avec la vidéo (en secondes)
+        const timedMessages = [
+            { time: 65, duration: 8, text: "Écoute cette voix. Laisse-la te traverser." },
+            { time: 94, duration: 7, text: "La puissance du collectif." },
+            { time: 170, duration: 10, text: "Regarde comme ils sont beaux." },
+            { time: 285, duration: 8, text: "Chaque instrument, une âme." },
+            { time: 438, duration: 7, text: "Vibre." },
+            { time: 598, duration: 12, text: "L'art est ce qui nous différencie de l'animal." },
+            { time: 740, duration: 10, text: "Unis dans l'harmonie." },
+            { time: 800, duration: 5, text: "Sens-tu la L ?" } // Video ends around 13:35 (815s)
+        ];
+
+        function onYouTubeIframeAPIReady() {}
+        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+
+        function createPlayer() {
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '100%', width: '100%', videoId: 'XH6IT_tsSUI',
+                playerVars: {
+                    'autoplay': 1, 'controls': 1,
+                    'rel': 0, 'showinfo': 0, 'modestbranding': 1, 'iv_load_policy': 3
+                },
+                events: { 
+                    'onStateChange': onPlayerStateChange,
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+        
+        function onPlayerReady(event) {
+            fadeOutAudio(ambianceAudio, 3000); 
+        }
+
+        function checkVideoTime() {
+            if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+            const currentTime = Math.floor(ytPlayer.getCurrentTime());
+            let messageToShow = defaultTitle;
+
+            for (const msg of timedMessages) {
+                if (currentTime >= msg.time && currentTime < msg.time + msg.duration) {
+                    messageToShow = msg.text;
+                    break;
+                }
+            }
+
+            if (videoTitleMessage.textContent !== messageToShow) {
+                videoTitleMessage.style.opacity = '0';
+                setTimeout(() => {
+                    videoTitleMessage.textContent = messageToShow;
+                    videoTitleMessage.style.opacity = '1';
+                }, 400); // Should be half of the CSS transition duration
+            }
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                messageInterval = setInterval(checkVideoTime, 1000);
+            } else {
+                clearInterval(messageInterval);
+            }
+            if (event.data == YT.PlayerState.ENDED) {
+                finalActions.classList.add('visible');
+                clearInterval(messageInterval);
+            }
+        }
+
+        // --- CORE NAVIGATION LOGIC ---
+        function goToStep(index) {
+            if (steps[currentStepIndex]) steps[currentStepIndex].classList.remove('active');
+            currentStepIndex = index;
+            if (steps[currentStepIndex]) {
+                steps[currentStepIndex].classList.add('active');
+                handleStepLogic(currentStepIndex);
+            }
+        }
+
+        function handleStepLogic(index) {
+            switch(index) {
+                case 1: 
+                    setTimeout(() => goToStep(2), 7000); 
+                    break;
+                case 2: setTimeout(() => goToStep(3), 18000); break;
+                case 3: 
+                    setTimeout(() => wordInput.focus(), 500); 
+                    break;
+                case 4: setTimeout(() => goToStep(5), 6000); break;
+                case 5:
+                    userWordDisplay.textContent = userBeautyWord;
+                    createPlayer();
+                    setTimeout(() => { userWordAnchor.classList.add('visible'); }, 1000);
+                    break;
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            ambianceAudio.play().catch(e => console.log('Erreur audio :', e));
+            goToStep(1);
+        });
+
+        wordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            userBeautyWord = wordInput.value.trim();
+            if(userBeautyWord) goToStep(4);
+        });
+        
+        // --- UI & ANIMATIONS ---
+        const lenis = new Lenis();
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        const interactiveElements = document.querySelectorAll('.interactive, a, button, input');
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            posX += (mouseX - posX) * 0.1; posY += (mouseY - posY) * 0.1;
+            if (follower) follower.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+            if (cursor) cursor.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+        
+        const trailCanvas = document.getElementById('particle-trail-canvas');
+        if (trailCanvas) {
+            const ctx = trailCanvas.getContext('2d'); let particles = [];
+            function setCanvasSize() { trailCanvas.width = window.innerWidth; trailCanvas.height = window.innerHeight; }
+            setCanvasSize(); window.addEventListener('resize', setCanvasSize);
+            document.addEventListener('mousemove', e => {
+                for (let i = 0; i < 2; i++) particles.push(new TrailParticle(e.clientX, e.clientY));
+            });
+            class TrailParticle {
+                constructor(x, y) { this.x = x; this.y = y; this.size = Math.random() * 2 + 1; this.speedX = Math.random() * 2 - 1; this.speedY = Math.random() * 2 - 1; this.color = 'rgba(212, 175, 55, 0.7)'; this.life = 1; }
+                update() { this.x += this.speedX; this.y += this.speedY; this.life -= 0.04; if (this.size > 0.1) this.size -= 0.03; }
+                draw() { ctx.fillStyle = this.color; ctx.globalAlpha = this.life; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+            }
+            function animateTrail() {
+                ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update(); particles[i].draw();
+                    if (particles[i].life <= 0 || particles[i].size <= 0.1) particles.splice(i, 1);
+                }
+                requestAnimationFrame(animateTrail);
+            }
+            animateTrail();
+        }
+    });
+    </script>
+</body>
+</html>
