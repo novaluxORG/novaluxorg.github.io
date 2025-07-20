@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nova Lux - Illumination</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset et Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --mood-color: #0a0a0a;
+            --text-color: #ffffff;
+            --accent-color: #ff0000;
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, var(--mood-color), #1a1a1a);
+            background-attachment: fixed;
+            color: var(--text-color);
+            overflow: hidden; /* Important for the immersive experience - prevents scrolling */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            transition: --mood-color 2s ease;
+            position: relative;
+            touch-action: none; /* Disable native scroll/zoom for full control */
+            -webkit-touch-callout: none; /* Disable callout on long press for iOS */
+            -webkit-user-select: none; /* Disable text selection for iOS */
+            user-select: none; /* Disable text selection */
+        }
+
+        /* --- NOUVEAUX STYLES POUR L'ÉCRAN DE DÉMARRAGE --- */
+
+        /* Écran de démarrage amélioré */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none; /* Empêche les interactions une fois caché */
+        }
+
+        #start-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 30%, rgba(255, 0, 0, 0.03) 70%);
+            animation: rotateGradient 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .start-title {
+            font-family: 'EB Garamond', serif;
+            font-size: clamp(2rem, 7vw, 4.5rem);
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 0, 0, 0.3); }
+        }
+
+        .start-subtitle {
+            font-size: clamp(0.9rem, 3vw, 1.3rem);
+            opacity: 0.7;
+            margin-bottom: 40px;
+            font-style: italic;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 0.7; transform: translateY(0); }
+        }
+
+        .start-buttons-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        .start-button {
+            min-width: 140px;
+            padding: 18px 40px;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-weight: 600;
+            color: #fff;
+            border: 2px solid #fff;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .start-button.yes {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-color: #ff0000;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .start-button.yes:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+        }
+
+        .start-button.no {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .start-button.no:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animation de transformation Non -> Oui */
+        .start-button.transforming {
+            animation: buttonTransform 0.6s ease-in-out;
+        }
+
+        @keyframes buttonTransform {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(0.9) rotate(-5deg); }
+            50% { transform: scale(0.8) rotate(180deg); opacity: 0.5; }
+            75% { transform: scale(0.9) rotate(355deg); }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        .start-button.shaking {
+            animation: buttonShake 0.5s ease-in-out;
+        }
+
+        @keyframes buttonShake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-10px) rotate(-2deg); }
+            20% { transform: translateX(10px) rotate(2deg); }
+            30% { transform: translateX(-8px) rotate(-1deg); }
+            40% { transform: translateX(8px) rotate(1deg); }
+            50% { transform: translateX(-5px); }
+            60% { transform: translateX(5px); }
+            70% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+
+        .start-warning {
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            opacity: 0;
+            color: #ff6666;
+            margin-top: 20px;
+            min-height: 20px; /* Empêche le saut de layout */
+            transition: opacity 0.3s, color 0.5s;
+        }
+
+        .start-warning.visible {
+            opacity: 1;
+        }
+
+        .devil-emoji {
+            display: inline-block;
+            animation: devilPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes devilPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* Petites particules flottantes pour l'ambiance */
+        .start-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: startFloat 20s linear infinite;
+            will-change: transform;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes startFloat {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(30px); opacity: 0; }
+        }
+
+        /* Eye qui suit la souris (easter egg) */
+        .watching-eye {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 3s;
+            pointer-events: none;
+        }
+
+        .watching-eye.visible {
+            opacity: 0.3;
+        }
+
+        .eye-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .eye-pupil {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .start-buttons-container {
+                flex-direction: row; /* Maintenir en ligne mais avec wrap */
+                gap: 20px;
+            }
+            
+            .start-button {
+                min-width: 120px;
+                padding: 16px 30px;
+            }
+        }
+        
+        /* --- FIN DES NOUVEAUX STYLES POUR L'ÉCRAN DE DÉMARRAGE --- */
+
+        /* Narrateur */
+        #narrator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            z-index: 100;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        #narrator-text {
+            font-family: 'EB Garamond', serif;
+            font-size: clamp(1.4rem, 5vw, 2.5rem);
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-in-out forwards;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        
+        /* ... LE RESTE DU CSS EST IDENTIQUE ET RESTE ICI ... */
+        /* [TOUT LE CSS PRÉCÉDENT, DE @keyframes fadeIn à la fin, est conservé sans modification] */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* États du texte narrateur */
+        #narrator-text.whispering {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            opacity: 0.6;
+            font-style: italic;
+            filter: blur(0.3px);
+        }
+
+        #narrator-text.aggressive {
+            font-weight: 900;
+            font-family: 'Inter', sans-serif;
+            color: #ff4d4d;
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            animation: aggressiveShake 0.5s ease-in-out;
+        }
+
+        @keyframes aggressiveShake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-5px) rotate(-1deg); }
+            20% { transform: translateX(5px) rotate(1deg); }
+            30% { transform: translateX(-3px) rotate(-0.5deg); }
+            40% { transform: translateX(3px) rotate(0.5deg); }
+            50% { transform: translateX(-1px); }
+        }
+
+        #narrator-text.holy {
+            background: linear-gradient(45deg, #ffd700, #fff, #ffd700);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: holy-pulse 1.5s infinite;
+        }
+
+        @keyframes holy-pulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+
+        /* Curseur custom (desktop only) */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.15s ease;
+            mix-blend-mode: difference;
+            display: none;
+        }
+
+        body:not(.experience-started) {
+            cursor: auto !important; /* Curseur normal sur l'écran de démarrage */
+        }
+
+        body.experience-started {
+            cursor: none; /* Cache le curseur uniquement pendant l'expérience */
+        }
+
+        /* Modifie le media query existant */
+        @media (hover: hover) and (pointer: fine) {
+            #cursor { 
+                display: none; /* Caché par défaut */
+            }
+            
+            body.experience-started #cursor {
+                display: block; /* Visible seulement après le démarrage */
+            }
+        }
+
+        #cursor.watching {
+            background: var(--accent-color);
+            transform: scale(2);
+            animation: pulse 0.5s infinite;
+        }
+
+        /* Compteur de dopamine */
+        #dopamine-meter {
+            position: fixed;
+            bottom: calc(120px + var(--safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 300px;
+            text-align: center;
+            display: none;
+            z-index: 150;
+        }
+
+        #dopamine-meter.visible {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(50px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .meter-label {
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            color: #888;
+            transition: color 0.3s ease;
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 16px; /* Légèrement plus grande */
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.8),
+                0 1px 0 rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #ff0066 0%, 
+                #ff3366 25%, 
+                #ff6666 50%, 
+                #ffaa66 75%, 
+                #ffff66 100%);
+            width: 50%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effet de brillance qui glisse */
+        .meter-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255,255,255,0.3) 50%, 
+                transparent 100%);
+            animation: shimmerSlide 3s infinite;
+        }
+
+        @keyframes shimmerSlide {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Particules flottantes dans la barre */
+        .meter-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                radial-gradient(circle at 60% 30%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.25) 0%, transparent 50%);
+            background-size: 10px 10px, 8px 8px, 6px 6px;
+            background-position: 0 0, 20px 5px, 40px 2px;
+            animation: bubbleFloat 20s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes bubbleFloat {
+            0% { background-position: 0 0, 20px 5px, 40px 2px; }
+            100% { background-position: 300px 0, 320px 5px, 340px 2px; }
+        }
+
+        /* Pulsation subtile quand niveau critique */
+        #dopamine-meter.critical .meter-bar {
+            animation: criticalPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes criticalPulse {
+            0%, 100% { 
+                box-shadow: 
+                    inset 0 2px 4px rgba(0,0,0,0.8),
+                    0 1px 0 rgba(255,255,255,0.1),
+                    0 0 10px rgba(255, 0, 0, 0.3);
+            }
+            50% { 
+                box-shadow: 
+                    inset 0 2px 4px rgba(0,0,0,0.8),
+                    0 1px 0 rgba(255,255,255,0.1),
+                    0 0 20px rgba(255, 0, 0, 0.5);
+            }
+        }
+
+        #dopamine-meter.critical .meter-label {
+            color: #ff6666;
+            animation: labelBlink 2s ease-in-out infinite;
+        }
+
+        @keyframes labelBlink {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Bouton d'achat évolutif */
+        .choice-container {
+            position: fixed;
+            bottom: calc(40px + var(--safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            z-index: 200;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .choice-container.visible {
+            display: block;
+            animation: slideInBottom 0.5s ease-out;
+        }
+
+        @keyframes slideInBottom {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 20px 35px;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border: 2px solid #444;
+            color: #fff;
+            font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Flèches animées sur les côtés */
+        .choice-btn::before,
+        .choice-btn::after {
+            content: '→';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .choice-btn::before {
+            left: 20px;
+            content: '←';
+        }
+
+        .choice-btn::after {
+            right: 20px;
+        }
+
+        .choice-btn:hover::before,
+        .choice-btn:hover::after {
+            opacity: 1;
+        }
+
+        .choice-btn:hover::before {
+            animation: arrowLeft 0.6s ease-in-out infinite;
+        }
+
+        .choice-btn:hover::after {
+            animation: arrowRight 0.6s ease-in-out infinite;
+        }
+
+        @keyframes arrowLeft {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(-5px); }
+        }
+
+        @keyframes arrowRight {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        /* État subtil */
+        .choice-btn.subtle {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+            animation: subtleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes subtleGlow {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 4px 30px rgba(255, 255, 255, 0.2); }
+        }
+
+        /* État normal */
+        .choice-btn.normal {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            border: 2px solid #555;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        /* État agressif */
+        .choice-btn.aggressive {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border: 3px solid #ff0000;
+            color: #fff;
+            font-weight: 900;
+            text-transform: uppercase;
+            animation: aggressivePulse 0.5s infinite, aggressiveGlow 0.5s infinite;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+        }
+
+        .choice-btn.aggressive::before,
+        .choice-btn.aggressive::after {
+            opacity: 1;
+            color: #fff;
+            font-size: 2em;
+        }
+
+        @keyframes aggressivePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes aggressiveGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(255, 0, 0, 0.9), inset 0 0 20px rgba(255, 0, 0, 0.3); }
+        }
+
+        /* État suppliant */
+        .choice-btn.pleading {
+            background: linear-gradient(135deg, #1a1a3e, #2a2a5e);
+            border: 2px solid #3a3a6e;
+            color: #aaccff;
+            font-style: italic;
+            animation: gentleSway 3s ease-in-out infinite, pleadingGlow 2s ease-in-out infinite;
+            box-shadow: 0 4px 25px rgba(100, 100, 255, 0.3);
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        @keyframes pleadingGlow {
+            0%, 100% { box-shadow: 0 4px 25px rgba(100, 100, 255, 0.3); }
+            50% { box-shadow: 0 4px 35px rgba(100, 100, 255, 0.5); }
+        }
+
+        /* État tentant */
+        .choice-btn.tempting {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 200%;
+            color: #000;
+            border: none;
+            font-weight: 700;
+            animation: shimmer 2s linear infinite, temptingPulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .choice-btn.tempting::before,
+        .choice-btn.tempting::after {
+            content: '✨';
+            opacity: 1;
+            animation: sparkle 1s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes temptingPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255, 215, 0, 0.6); }
+            50% { transform: scale(1.02); box-shadow: 0 0 60px rgba(255, 215, 0, 0.9); }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: translateY(-50%) scale(1) rotate(0deg); }
+            50% { transform: translateY(-50%) scale(1.2) rotate(180deg); }
+        }
+
+        /* État final */
+        .choice-btn.final {
+            background: #000;
+            border: 3px solid #fff;
+            color: #fff;
+            animation: finalFlash 0.8s infinite, finalScale 2s ease-in-out infinite;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .choice-btn.final::before {
+            content: '⚡';
+        }
+
+        .choice-btn.final::after {
+            content: '⚡';
+        }
+
+        .choice-btn.final::before,
+        .choice-btn.final::after {
+            opacity: 1;
+            color: #fff;
+            animation: lightning 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes finalFlash {
+            0%, 100% { opacity: 1; background: #000; }
+            50% { opacity: 0.9; background: #111; }
+        }
+
+        @keyframes finalScale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes lightning {
+            0% { opacity: 0.5; transform: translateY(-50%) scale(0.8); }
+            100% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+        }
+
+        /* Effet de hover commun à tous les états */
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .choice-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Animation de pulsation constante pour attirer l'attention */
+        .choice-btn {
+            animation: constantPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes constantPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Désactive l'animation de pulsation constante lors du hover */
+        .choice-btn:hover {
+            animation: none;
+        }
+
+        /* Animations pour les nouveaux effets visuels */
+        @keyframes lightningStrike {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes goldFloat {
+            0% { 
+                opacity: 1; 
+                transform: translate(0, 0) scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translate(var(--dx), var(--dy)) scale(0); /* Using CSS variables for randomness */
+            }
+        }
+
+        /* Bursts de dopamine */
+        .dopamine-burst {
+            position: fixed;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 900;
+            color: #00ff00;
+            pointer-events: none;
+            z-index: 1000;
+            animation: burst 1s forwards;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+
+        @keyframes burst {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.5) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) translateY(-60px) scale(1) rotate(15deg); opacity: 0; }
+        }
+
+        /* Money burst */
+        .money-burst {
+            position: fixed;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            pointer-events: none;
+            z-index: 1000;
+            animation: money-float 2s forwards;
+        }
+
+        @keyframes money-float {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) translateY(-150px) scale(0.8) rotate(30deg); opacity: 0; }
+        }
+
+        /* Particules saintes */
+        .holy-particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #ffd700;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: holy-particle-float 3s forwards;
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes holy-particle-float {
+            0% { opacity: 0; transform: translateY(0) scale(0); }
+            50% { opacity: 1; transform: translateY(-100px) scale(1); }
+            100% { opacity: 0; transform: translateY(-200px) scale(0); }
+        }
+
+        /* Roi des singes */
+        #monkey-king {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); /* Start scaled down */
+            display: none;
+            z-index: 300;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none; /* Make it non-interactive */
+        }
+
+        #monkey-king img {
+            max-width: 70vw;
+            max-height: 40vh;
+            height: auto;
+            border-radius: 50%; /* Make it round if it's not transparent */
+            animation: pulse-avatar 1.5s infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+            object-fit: contain; /* Ensure the image fits within the bounds without cropping */
+        }
+        
+        @keyframes pulse-avatar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* GIF Musique d'ascenseur */
+        /* MODIFICATION : Ajuster le style du GIF pour qu'il soit plus visible à la fin */
+        #elevator-gif-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            pointer-events: none;
+            background-color: rgba(0,0,0,0.5); /* Overlay plus visible */
+            transition: opacity 1s ease; /* Pour le fondu de sortie */
+        }
+
+        #elevator-gif-container img {
+            max-width: 90vw;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: blur(1px); /* Blur plus subtil pour la fin */
+            animation: fadeIn 1s forwards, gentlePulse 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        /* Animation de pulsation douce pour le GIF */
+        @keyframes gentlePulse {
+            0%, 100% { 
+                transform: scale(1); 
+                filter: blur(1px) brightness(1);
+            }
+            50% { 
+                transform: scale(1.02); 
+                filter: blur(0.5px) brightness(1.1);
+            }
+        }
+
+        /* Code promo */
+        #coupon-display {
+            position: fixed;
+            bottom: calc(20px + var(--safe-area-inset-bottom));
+            right: 20px;
+            background: #0f0;
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            display: none;
+            z-index: 250;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+            animation: couponBounce 0.5s ease-out;
+            max-width: calc(100% - 40px);
+        }
+
+        @keyframes couponBounce {
+            0% { transform: scale(0) rotate(-180deg); }
+            50% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        /* Commentaires meta */
+        .meta-comment {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            opacity: 0;
+            animation: metaFade 3s forwards;
+            pointer-events: none;
+            z-index: 400;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes metaFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        /* Particules subtiles */
+        .subtle-particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            animation: float linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100px) translateX(20px); }
+        }
+
+        /* Indicateur d'interaction */
+        .tap-indicator {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: tapRipple 0.6s ease-out forwards;
+            z-index: 500;
+        }
+
+        @keyframes tapRipple {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+
+        /* Bouton secret de sortie */
+        #secret-exit {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            z-index: 10000;
+            opacity: 0.3;
+        }
+        
+        /* Faux bouton de fermeture plus réaliste */
+        .fake-close {
+            position: fixed;
+            top: calc(20px + var(--safe-area-inset-top));
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 300;
+            cursor: pointer;
+            border-radius: 8px;
+            z-index: 600;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .fake-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .fake-close:active {
+            transform: scale(0.95);
+            background: rgba(255, 0, 0, 0.3);
+        }
+
+        /* Badges ironiques */
+        .achievement {
+            position: fixed;
+            top: calc(20px + var(--safe-area-inset-top));
+            right: -300px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+            animation: achievementSlide 4s forwards;
+            z-index: 700;
+            backdrop-filter: blur(10px);
+            max-width: 250px;
+        }
+
+        @keyframes achievementSlide {
+            0% { right: -300px; }
+            20% { right: 20px; }
+            80% { right: 20px; }
+            100% { right: -300px; }
+        }
+
+        .achievement-title {
+            font-weight: 700;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            opacity: 0.8;
+        }
+
+        /* Message d'avertissement dopamine */
+        .dopamine-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.95);
+            color: #fff;
+            padding: 30px 40px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 800;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff0000;
+            max-width: 90%;
+            animation: warningPulse 0.5s ease-out;
+            display: none;
+        }
+
+        @keyframes warningPulse {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .dopamine-warning h3 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .dopamine-warning p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.4;
+        }
+
+        /* Optimisations mobile */
+        @media (max-width: 768px) {
+            #narrator {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            #dopamine-meter {
+                bottom: calc(100px + var(--safe-area-inset-bottom));
+                width: 90%;
+            }
+            
+            .choice-container {
+                bottom: calc(20px + var(--safe-area-inset-bottom));
+                width: 95%;
+            }
+            
+            #coupon-display {
+                bottom: calc(80px + var(--safe-area-inset-bottom));
+                right: 10px;
+                left: 10px;
+                margin: 0 auto;
+                max-width: none;
+            }
+            
+            .fake-close {
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+            }
+
+            #monkey-king img, #elevator-gif-container img {
+                max-width: 90vw;
+                max-height: 50vh;
+            }
+        }
+
+        /* Support pour notch iPhone (safe-area-inset) */
+        @supports (padding: max(0px)) {
+            #narrator {
+                padding-top: max(20px, env(safe-area-inset-top));
+            }
+        }
+
+        /* Désactiver les comportements mobiles indésirables */
+        @media (pointer: coarse) { /* Cibler les appareils tactiles */
+            * {
+                -webkit-tap-highlight-color: transparent; /* Supprime le flash de sélection */
+            }
+            
+            .choice-btn:active {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Mode paysage mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #narrator {
+                top: 40%;
+            }
+            
+            #narrator-text {
+                font-size: clamp(1rem, 4vw, 1.8rem);
+            }
+            
+            .choice-container {
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ÉCRAN DE DÉMARRAGE AMÉLIORÉ (REMPLACEMENT) -->
+    <div id="start-screen">
+        <h1 class="start-title">Veux-tu connaître la vérité ?</h1>
+        <p class="start-subtitle">Certains choix sont plus illusoires que d'autres...</p>
+        
+        <div class="start-buttons-container">
+            <button class="start-button yes" onclick="startExperience()">Oui</button>
+            <button class="start-button no" id="no-button" onclick="handleNoClick()">Non</button>
+        </div>
+        
+        <p class="start-warning" id="start-warning"></p>
+        
+        <!-- Eye easter egg -->
+        <div class="watching-eye" id="watching-eye">
+            <div class="eye-ball">
+                <div class="eye-pupil" id="eye-pupil"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cursor"></div>
+    
+    <div id="narrator">
+        <p id="narrator-text"></p>
+    </div>
+
+    <div id="dopamine-meter">
+        <div class="meter-label">Niveau de Dopamine</div>
+        <div class="meter-bar">
+            <div class="meter-fill"></div>
+        </div>
+    </div>
+
+    <div class="choice-container">
+        <a href="https://www.amazon.fr/dp/B0D9S5QDF8" target="_blank" class="choice-btn subtle" data-choice="buy">Découvrir Nova Lux</a>
+    </div>
+
+    <div id="monkey-king">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGdrbGRkeTY0ZTlhOGZhOHhsM2t5Ymdpb2M4Z242a2V0MW9xcWlxaiZlcD1WjV9naWZzX3NlYXJjaCZjdD1n/aQulm44nAzizGH4Gtj/giphy.gif" alt="Singix 1er">
+        <p style="margin-top:10px; font-weight:bold; font-size: clamp(1rem, 3vw, 1.2rem);">Singix 1er</p>
+    </div>
+
+    <div id="elevator-gif-container">
+        <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3am1zeTBmZGdlYjFmZ2JxeHBwMnQwc2dpazZwejlzeTh1eHlzdmNkbSZlcD1GMV9naWZzX3NlYXJjaCZjdD1n/GhYH1HLjuMBKkRw9Ec/giphy.gif" alt="Waiting for dopamine">
+    </div>
+
+    <div id="coupon-display">
+        CODE: JESUISLUMIERE (-10%)
+    </div>
+
+    <div id="secret-exit" onclick="secretExit()" title="🤫"></div>
+    
+    <div class="dopamine-warning" id="dopamine-warning">
+        <h3>⚠️ ATTENTION ⚠️</h3>
+        <p>Niveau de dopamine critique !<br>
+        Si tu atteins 0%, tu seras automatiquement redirigé vers l'achat.<br>
+        <strong>Tu as été prévenu.</strong></p>
+    </div>
+
+    <!-- AUDIO -->
+    <audio id="main-narration-audio" preload="auto">
+        <source src="narration.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="holy-sound" preload="auto">
+        <source src="holy.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="elevator-music-audio" loop preload="auto">
+        <source src="elevator.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="money-burst-audio" preload="auto">
+        <source src="money_burst.mp3" type="audio/mpeg">
+    </audio>
+    <!-- NOUVEAUX SONS POUR L'ÉCRAN DE DÉMARRAGE (place tes fichiers ici) -->
+    <audio id="no-click-sound" preload="auto"><source src="no-click.mp3" type="audio/mpeg"></audio>
+    <audio id="transform-sound" preload="auto"><source src="transform.mp3" type="audio/mpeg"></audio>
+    <audio id="konami-sound" preload="auto"><source src="konami.mp3" type="audio/mpeg"></audio>
+
+
+    <script>
+        // --- VARIABLES GLOBALES ---
+        const cursor = document.getElementById('cursor');
+        const narratorText = document.getElementById('narrator-text');
+        const mainAudio = document.getElementById('main-narration-audio');
+        const elevatorMusic = document.getElementById('elevator-music-audio');
+        const elevatorGifContainer = document.getElementById('elevator-gif-container');
+        const AMAZON_URL = 'https://www.amazon.fr/dp/B0D9S5QDF8';
+        
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let dopamineLevel = 50;
+        let audioContext;
+        let analyser;
+        let elevatorMusicPlaying = false;
+        let inactivityTimer;
+        let buttonState = 'subtle';
+        let userResistanceLevel = 0;
+        let lastInteractionTime = Date.now();
+        let dopamineDecreaseInterval;
+        let hasReachedZeroDopamine = false;
+
+        // Variables pour l'écran de démarrage (NOUVEAU)
+        let noClickCount = 0;
+        let eyeVisible = false;
+        const noMessages = [
+            "Tu es sûr ?",
+            "Vraiment sûr ?",
+            "Allez, clique sur Oui...",
+            "Tu résistes encore ? C'est mignon.",
+            "On sait tous les deux comment ça va finir.",
+            "Chaque clic sur 'Non' est un 'Oui' déguisé.",
+            "Tu perds ton temps, pas moi.",
+            "Dernière chance... ou pas.",
+            "OK j'abandonne... pour l'instant."
+        ];
+        let konamiCode = [];
+        const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+
+        // Profil utilisateur enrichi
+        const userProfile = {
+            clicks: 0,
+            hoveredBuyButton: 0,
+            timeSpent: 0,
+            resistanceLevel: 0,
+            curiosityScore: 0,
+            scrollAttempts: 0, 
+            achievements: [],
+            hasSeenWarning: false
+        };
+
+        // États du bouton
+        const buttonStates = {
+            'subtle': { text: 'Découvrir Nova Lux', className: 'subtle' },
+            'normal': { text: 'Acheter Nova Lux', className: 'normal' },
+            'aggressive': { text: 'ACHÈTE!', className: 'aggressive' },
+            'pleading': { text: 'S\'il te plaît...', className: 'pleading' },
+            'tempting': { text: '✨ Un petit clic ✨', className: 'tempting' },
+            'desperate': { text: 'Je t\'en supplie', className: 'pleading' }, 
+            'final': { text: 'CLIQUE !', className: 'final' }
+        };
+
+        // Données des sous-titres
+        const subtitles_data = [
+            // ... (Contenu des sous-titres inchangé)
+            { start: 0.6, end: 1.68, text: "Bravo.", mood: 'neutral' },
+            { start: 1.68, end: 2.92, text: "Tu as scrollé jusqu'à la fin.", mood: 'neutral' },
+            { start: 3.44, end: 3.88, text: "Bravo.", mood: 'neutral' },
+            { start: 4.24, end: 4.88, text: "Vraiment.", mood: 'neutral' },
+            { start: 5.16, end: 7.04, text: "Et pourquoi as-tu scrollé jusqu'ici ?", mood: 'neutral' },
+            { start: 7.68, end: 8.48, text: "par habitude ?", mood: 'neutral' },
+            { start: 8.84, end: 10.00, text: "Tu vois que tu peux scroller,", mood: 'neutral' },
+            { start: 10.00, end: 10.92, text: "alors tu scrolles toi ?", mood: 'neutral' },
+            { start: 11.16, end: 12.56, text: "Zéro libre arbitre.", mood: 'aggressive' },
+            { start: 13.00, end: 14.40, text: "Totalement prévisible.", mood: 'aggressive' },
+            { start: 14.76, end: 15.84, text: "Un singe.", mood: 'aggressive' },
+            { start: 16.52, end: 17.96, text: "Un singe soumis.", mood: 'aggressive' },
+            { start: 17.96, end: 19.04, text: "Conditionné.", mood: 'aggressive' },
+            { start: 19.64, end: 20.72, text: "Pavlovisé.", mood: 'aggressive' },
+            { start: 20.72, end: 22.04, text: "Avili.", mood: 'aggressive' },
+            { start: 22.04, end: 24.28, text: "Par sa propre dopamine", action: "showDopamine", mood: 'aggressive' },
+            { start: 24.28, end: 25.20, text: "Risible.", mood: 'aggressive' },
+            { start: 25.64, end: 26.44, text: "Bon,", mood: 'neutral' },
+            { start: 26.44, end: 27.24, text: "tu te demandes ce que je te veux", mood: 'neutral' },
+            { start: 27.32, end: 28.88, text: "en t'invectivant de la sorte.", mood: 'neutral' },
+            { start: 29.36, end: 30.76, text: "CE QUE JE TE VEUX ?", mood: 'aggressive' },
+            { start: 30.88, end: 31.76, text: "à ton avis ?", mood: 'neutral' },
+            { start: 31.76, end: 33.00, text: "Comment tourne le monde ?", mood: 'neutral' },
+            { start: 33.00, end: 34.36, text: "Avec ... ? Avec ?", mood: 'neutral' },
+            { start: 34.68, end: 35.72, text: "L'argent voilà.", action: "moneyExplosion", mood: 'neutral' },
+            { start: 35.92, end: 37.12, text: "Allez donne-moi ton argent !", mood: 'aggressive' },
+            { start: 37.56, end: 38.36, text: "Facile.", mood: 'neutral' },
+            { start: 38.84, end: 39.92, text: "Pourquoi faire ?", mood: 'neutral' },
+            { start: 39.92, end: 41.32, text: "La bourse ou l'ennui ?!", mood: 'aggressive' },
+            { start: 41.60, end: 42.40, text: "Tu piges ?", mood: 'neutral' },
+            { start: 43.16, end: 43.96, text: "Non.", mood: 'neutral' },
+            { start: 44.40, end: 45.20, text: "évidemment.", mood: 'neutral' },
+            { start: 46.16, end: 48.24, text: "Je vends quelque chose en gros.", mood: 'neutral' },
+            { start: 48.76, end: 49.76, text: "Là tu comprends mieux ?", mood: 'neutral' },
+            { start: 49.84, end: 51.96, text: "Je vends et toi tu achètes.", mood: 'neutral' },
+            { start: 52.64, end: 53.64, text: "Le produit ?", mood: 'neutral' },
+            { start: 53.64, end: 54.24, text: "Devine.", mood: 'neutral' },
+            { start: 55.00, end: 55.84, text: "Une secte ?", mood: 'neutral' },
+            { start: 55.84, end: 56.16, text: "Non.", mood: 'neutral' },
+            { start: 56.60, end: 57.28, text: "Du rêve ?", mood: 'neutral' },
+            { start: 57.28, end: 57.92, text: "Non plus.", mood: 'neutral' },
+            { start: 58.36, end: 59.16, text: "Mon âme ?", mood: 'neutral' },
+            { start: 59.56, end: 60.56, text: "à débattre.", mood: 'neutral' },
+            { start: 60.84, end: 61.68, text: "MaiS qUoI AloRs ?", mood: 'aggressive' },
+            { start: 62.52, end: 63.40, text: "Un livre.", mood: 'neutral' },
+            { start: 63.40, end: 64.40, text: "Un roman.", mood: 'neutral' },
+            { start: 64.76, end: 66.08, text: "Pas nul ni bien.", mood: 'neutral' },
+            { start: 66.08, end: 68.28, text: "à ton niveau disons hein.", mood: 'neutral' },
+            { start: 68.28, end: 70.00, text: "NOVA LUX !", action: "holyEffect", mood: 'holy' },
+            { start: 70.24, end: 71.44, text: "Mais c'est à propos de quoi", mood: 'neutral' },
+            { start: 71.44, end: 72.44, text: "exactement ce livre ?", mood: 'neutral' },
+            { start: 72.92, end: 74.32, text: "Une question fort intelligente.", mood: 'neutral' },
+            { start: 74.52, end: 74.96, text: "Bravo.", mood: 'neutral' },
+            { start: 74.96, end: 76.36, text: "Alors ça parle de :", mood: 'neutral' },
+            { start: 76.36, end: 76.60, text: "Toi.", mood: 'neutral' },
+            { start: 77.44, end: 78.00, text: "De nous.", mood: 'neutral' },
+            { start: 78.00, end: 79.64, text: "De singes en somme.", mood: 'neutral' },
+            { start: 80.04, end: 81.16, text: "Du besoin de croire", mood: 'neutral' },
+            { start: 81.16, end: 82.00, text: "De la dopamine", mood: 'neutral' },
+            { start: 82.16, end: 82.56, text: "De la vie", mood: 'neutral' },
+            { start: 82.56, end: 83.80, text: "De l'intelligence artificielle", mood: 'neutral' },
+            { start: 84.04, end: 85.00, text: "tout ça tout ça quoi.", mood: 'neutral' },
+            { start: 85.28, end: 86.60, text: "Rien de neuf sous les tropiques.", mood: 'neutral' },
+            { start: 86.68, end: 87.56, text: "C'est pas le livre de l'année", mood: 'neutral' },
+            { start: 87.72, end: 88.84, text: "Encore moins de la décennie.", mood: 'neutral' },
+            { start: 89.12, end: 90.04, text: "Il est plutôt mal écrit,", mood: 'neutral' },
+            { start: 90.32, end: 91.92, text: "Mais il est beau au moins", mood: 'neutral' },
+            { start: 91.92, end: 93.12, text: "C'est disons...", mood: 'neutral' },
+            { start: 93.20, end: 94.16, text: "dans l'air du temps.", mood: 'neutral' },
+            { start: 94.44, end: 95.64, text: "Alors achète-le !", action: "showBuyButton", buttonState: "normal", mood: 'neutral' },
+            { start: 95.80, end: 97.12, text: "Tu seras à la mode promis !", mood: 'neutral' },
+            { start: 97.24, end: 98.04, text: "Tu pourras faire", mood: 'neutral' },
+            { start: 98.04, end: 99.24, text: "Un petit post Insta avec", mood: 'neutral' },
+            { start: 99.40, end: 101.08, text: "ou pire faire un BeReal avec.", mood: 'neutral' },
+            { start: 101.48, end: 103.00, text: "tu sais à quel point c'est trendy...", mood: 'neutral' },
+            { start: 103.16, end: 104.24, text: "de lire en 2025 ?", mood: 'neutral' },
+            { start: 104.28, end: 105.88, text: "ça te parle ça d'être Trendy ?", mood: 'neutral' },
+            { start: 106.28, end: 107.16, text: "à la mode", mood: 'neutral' },
+            { start: 107.16, end: 108.44, text: "Tel un hipster.", mood: 'neutral' },
+            { start: 108.76, end: 109.52, text: "Donc lire des livres,", mood: 'neutral' },
+            { start: 109.52, end: 110.40, text: "c'est parfait pour toi.", mood: 'neutral' },
+            { start: 110.68, end: 111.48, text: "C'est parfait !", mood: 'neutral' },
+            { start: 111.72, end: 113.44, text: "T'es même pas obligé de le lire en soi,", mood: 'neutral' },
+            { start: 113.60, end: 114.48, text: "juste tu l'achètes", mood: 'neutral' },
+            { start: 114.48, end: 115.12, text: "tu poses avec", mood: 'neutral' },
+            { start: 115.12, end: 115.92, text: "tu fais semblant", mood: 'neutral' },
+            { start: 116.28, end: 117.60, text: "On pensera que tu es intelligent.", mood: 'neutral' },
+            { start: 118.52, end: 119.44, text: "Alors achète-le !", buttonState: "tempting", mood: 'neutral' },
+            { start: 123.16, end: 123.88, text: "Mais...", mood: 'neutral' },
+            { start: 124.28, end: 124.96, text: "Me dis pas que", mood: 'neutral' },
+            { start: 124.96, end: 126.60, text: "t'es en train d'hésiter ?", mood: 'neutral' },
+            { start: 126.76, end: 127.44, text: "évidemment", mood: 'neutral' },
+            { start: 127.56, end: 128.36, text: "Que tu hésites.", mood: 'neutral' },
+            { start: 128.88, end: 130.04, text: "c'est ce que tu fais toujours...", mood: 'neutral' },
+            { start: 130.40, end: 131.16, text: "Hésiter.", mood: 'neutral' },
+            { start: 131.28, end: 132.20, text: "Procrastiner.", mood: 'neutral' },
+            { start: 132.36, end: 133.28, text: "Décevoir.", mood: 'neutral' },
+            { start: 133.60, end: 134.60, text: "Encore et toujours", mood: 'aggressive' },
+            { start: 134.96, end: 136.44, text: "mais jamais AGIR.", mood: 'aggressive' },
+            { start: 136.80, end: 137.72, text: "tu sais ce que tu es ?", mood: 'aggressive' },
+            { start: 138.40, end: 138.88, text: "Un singe.", mood: 'aggressive' },
+            { start: 138.88, end: 140.56, text: "Mais ça je te l'avais déjà dit.", mood: 'aggressive' },
+            { start: 141.00, end: 142.28, text: "Un gros singe alors.", mood: 'aggressive' },
+            { start: 142.28, end: 143.48, text: "Le roi des singes :", mood: 'aggressive' },
+            { start: 143.76, end: 145.16, text: "Singix premier du nom.", action: "showMonkeyKing", mood: 'aggressive' },
+            { start: 145.36, end: 146.24, text: "Regarde toi.", mood: 'aggressive' },
+            { start: 146.36, end: 147.20, text: "Même maintenant", mood: 'aggressive' },
+            { start: 147.24, end: 147.96, text: "Tu attends la suite.", mood: 'aggressive' },
+            { start: 148.08, end: 149.52, text: "Tu attends un easter egg", mood: 'aggressive' },
+            { start: 149.56, end: 150.32, text: "Comme le dernier", mood: 'aggressive' },
+            { start: 150.32, end: 151.60, text: "des fans abruti par Marvel...", mood: 'aggressive' },
+            { start: 151.88, end: 152.32, text: "NON.", mood: 'aggressive' },
+            { start: 152.68, end: 153.44, text: "Compte pas sur moi.", mood: 'aggressive' },
+            { start: 153.56, end: 155.08, text: "Je te donnerai pas cette satisfaction.", mood: 'aggressive' },
+            { start: 155.36, end: 156.52, text: "Pas d'easter egg.", mood: 'aggressive' },
+            { start: 156.52, end: 156.88, text: "Nope.", mood: 'aggressive' },
+            { start: 157.20, end: 158.44, text: "Rien de tout ça ici.", mood: 'aggressive' },
+            { start: 158.76, end: 160.60, text: "Alors achète et puis c'est tout.", buttonState: "aggressive", mood: 'aggressive' },
+            { start: 160.60, end: 161.56, text: "Moi je me casse.", action: "playElevatorMusic", mood: 'neutral' },
+            { start: 180.88, end: 182.72, text: "Bah alors on est toujours là ?", action: "stopElevatorMusic", mood: 'neutral' },
+            { start: 182.72, end: 183.36, text: "On boude ?", mood: 'neutral' },
+            { start: 183.80, end: 184.84, text: "On attend la suite ?", mood: 'neutral' },
+            { start: 185.00, end: 186.68, text: "Je t'ai dit-il y aura rien d'autre !", mood: 'aggressive' },
+            { start: 187.32, end: 189.04, text: "Tu sais à quoi tu me fais penser ?", mood: 'neutral' },
+            { start: 189.32, end: 190.84, text: "à moi-même quand j'étais enfant.", mood: 'neutral' },
+            { start: 191.60, end: 192.60, text: "ça me rappelle un souvenir", mood: 'neutral' },
+            { start: 192.60, end: 193.36, text: "en fait quand ma mère", mood: 'neutral' },
+            { start: 193.40, end: 194.20, text: "Elle m'avait mis devant", mood: 'neutral' },
+            { start: 194.20, end: 194.84, text: "un plat de soupe", mood: 'neutral' },
+            { start: 194.84, end: 195.68, text: "que je ne voulais pas manger", mood: 'neutral' },
+            { start: 195.88, end: 197.20, text: "Une soupe au poids cassé.", mood: 'neutral' },
+            { start: 197.20, end: 197.92, text: "Je déteste ça", mood: 'neutral' },
+            { start: 198.60, end: 199.48, text: "Et elle m'a dit", mood: 'neutral' },
+            { start: 199.76, end: 201.20, text: "\"Tu ne quitteras pas la pièce", mood: 'neutral' },
+            { start: 201.36, end: 202.92, text: "tant que tu n'auras pas mangé la soupe\"", mood: 'neutral' },
+            { start: 203.20, end: 204.80, text: "Et elle m'a laissé devant la soupe", mood: 'neutral' },
+            { start: 205.44, end: 206.60, text: "elle a fermé la porte", mood: 'neutral' },
+            { start: 206.96, end: 207.88, text: "éteint la lumière", mood: 'neutral' },
+            { start: 207.88, end: 209.76, text: "et j'étais moi-même face à la soupe", mood: 'neutral' },
+            { start: 210.04, end: 211.24, text: "dans l'obligation de la manger.", mood: 'neutral' },
+            { start: 211.68, end: 213.32, text: "ALORS MANGE TA SOUPE MON GRAND !", mood: 'aggressive' },
+            { start: 229.12, end: 230.76, text: "Et une cuillère pour papa", action: "playElevatorMusic", buttonState: "pleading", mood: 'pleading' },
+            { start: 231.24, end: 232.84, text: "Et une cuillère pour maman", mood: 'pleading' },
+            { start: 233.96, end: 235.20, text: "allez hop !", mood: 'pleading' },
+            { start: 235.20, end: 236.24, text: "Oh je vais pas faire l'avion", mood: 'pleading' },
+            { start: 236.40, end: 237.36, text: "quand-même hein.", mood: 'pleading' },
+            { start: 237.52, end: 238.64, text: "allez achète le livre !", mood: 'pleading' },
+            { start: 248.68, end: 249.60, text: "BON OK.", action: "stopElevatorMusic", mood: 'neutral' },
+            { start: 249.60, end: 250.64, text: "T'es dur en affaire", mood: 'neutral' },
+            { start: 250.64, end: 251.48, text: "je le reconnais.", mood: 'neutral' },
+            { start: 252.16, end: 253.44, text: "Alors je t'offre quelque chose...", mood: 'neutral' },
+            { start: 253.84, end: 254.28, text: "Ok ?", mood: 'neutral' },
+            { start: 254.72, end: 255.32, text: "Moins 10%", mood: 'neutral' },
+            { start: 255.32, end: 256.48, text: "sur le prix du livre", mood: 'neutral' },
+            { start: 256.56, end: 258.00, text: "avec le code 'JESUISLUMIERE'", action: "showCoupon", buttonState: "tempting", mood: 'neutral' },
+            { start: 258.52, end: 259.76, text: "Content ?", mood: 'neutral' },
+            { start: 260.00, end: 260.68, text: "Alors achète.", mood: 'neutral' },
+            { start: 260.68, end: 262.44, text: "Je t'ai tout donné le code promo,", mood: 'neutral' },
+            { start: 262.56, end: 263.52, text: "l'insulte gratuite,", mood: 'neutral' },
+            { start: 263.52, end: 264.08, text: "l'outrance,", mood: 'neutral' },
+            { start: 264.52, end: 265.04, text: "l'expérience,", mood: 'neutral' },
+            { start: 265.04, end: 266.56, text: "et pourtant t'as toujours pas acheté.", mood: 'neutral' },
+            { start: 267.16, end: 268.84, text: "Je dois faire quoi pour que tu achètes ?", mood: 'neutral' },
+            { start: 268.96, end: 269.96, text: "Te menacer ?", mood: 'aggressive' },
+            { start: 270.24, end: 270.80, text: "Achète !", mood: 'aggressive' },
+            { start: 271.00, end: 271.80, text: "Je te dis.", mood: 'aggressive' },
+            { start: 271.80, end: 272.40, text: "achète !", mood: 'aggressive' },
+            { start: 272.40, end: 273.24, text: "achète-le !", buttonState: "aggressive", mood: 'aggressive' },
+            { start: 273.72, end: 274.92, text: "ACHETE PUTAIN.", mood: 'aggressive' },
+            { start: 274.92, end: 275.44, text: "ACHETE !", mood: 'aggressive' },
+            { start: 275.60, end: 276.64, text: "C'est tout ce que tu sais faire !", mood: 'aggressive' },
+            { start: 276.76, end: 278.60, text: "Tu crois résister en restant ici ?", mood: 'aggressive' },
+            { start: 278.84, end: 279.88, text: "Tu ne résistes pas.", mood: 'aggressive' },
+            { start: 280.12, end: 281.44, text: "Je le savais que t'allais rester.", mood: 'aggressive' },
+            { start: 281.84, end: 283.12, text: "Et je sais aussi que t'es en train", mood: 'aggressive' },
+            { start: 283.12, end: 283.80, text: "de penser au livre", mood: 'aggressive', },
+            { start: 284.04, end: 285.24, text: "\"Il a l'air bizarre ce livre \"", mood: 'aggressive', textStyle: 'whispering' },
+            { start: 285.88, end: 287.24, text: "\"et si c'était vraiment intéressant ? \"", mood: 'aggressive', textStyle: 'whispering' },
+            { start: 287.48, end: 289.00, text: "\"ça ferait un bon cadeau à Mamie\"", mood: 'aggressive', textStyle: 'whispering' },
+            { start: 289.24, end: 290.08, text: "Voilà ta vraie nature.", mood: 'aggressive' },
+            { start: 290.52, end: 291.96, text: "Un consommateur pathétique.", mood: 'aggressive' },
+            { start: 292.04, end: 292.72, text: "Alors tu fais ce que ce", mood: 'aggressive' },
+            { start: 292.72, end: 293.48, text: "que tu fais de mieux...", mood: 'aggressive' },
+            { start: 293.52, end: 294.68, text: "tu vois-je BEGAYE tellement !", mood: 'aggressive' },
+            { start: 295.24, end: 296.56, text: "Et tu achètes.", mood: 'aggressive' },
+            { start: 296.80, end: 297.80, text: "ACHÈTE ! j'te dis", mood: 'aggressive' },
+            { start: 298.36, end: 299.16, text: "ACHÈTE !", mood: 'aggressive' },
+            { start: 299.52, end: 300.20, text: "1 2 3...", mood: 'aggressive' },
+            { start: 300.20, end: 300.64, text: "ACHÈTE !", mood: 'aggressive' },
+            { start: 300.84, end: 301.48, text: "Clique dessus.", mood: 'aggressive' },
+            { start: 301.48, end: 302.44, text: "Clique bordel !", mood: 'aggressive' },
+            { start: 302.72, end: 303.08, text: "Clique", mood: 'aggressive' },
+            { start: 303.08, end: 303.52, text: "CLIQUE !", mood: 'aggressive' },
+            { start: 303.52, end: 304.60, text: "Tu refuses la vérité ?", mood: 'aggressive' },
+            { start: 304.60, end: 305.52, text: "Tu te fais du mal.", mood: 'aggressive' },
+            { start: 305.72, end: 306.08, text: "Clique !", mood: 'aggressive' },
+            { start: 306.08, end: 306.84, text: "C'est si facile", mood: 'aggressive' },
+            { start: 307.20, end: 307.92, text: "Clique j'te dis", mood: 'aggressive' },
+            { start: 307.92, end: 308.40, text: "CLIQUE !", mood: 'aggressive' },
+            { start: 308.64, end: 309.04, text: "Clique !", mood: 'aggressive' },
+            { start: 309.04, end: 310.24, text: "Tu le veux ce livre !", mood: 'aggressive' },
+            { start: 310.52, end: 310.92, text: "Clique", mood: 'aggressive' },
+            { start: 313.96, end: 314.76, text: "Impressionnant.", mood: 'neutral' },
+            { start: 315.16, end: 316.84, text: "Bon ok je m'avoue vaincu.", mood: 'neutral' },
+            { start: 317.04, end: 317.84, text: "t'es encore là", mood: 'neutral' },
+            { start: 319.84, end: 320.64, text: "*souffle*", mood: 'neutral' },
+            { start: 321.80, end: 323.28, text: "Agressivité ça marche pas...", mood: 'neutral' },
+            { start: 326.84, end: 327.48, text: "Le seul truc", mood: 'neutral' },
+            { start: 327.48, end: 328.72, text: "que tu ne sais pas c'est que", mood: 'neutral' },
+            { start: 329.24, end: 330.04, text: "c'est moi ici", mood: 'neutral' },
+            { start: 330.44, end: 331.72, text: "qui contrôle la narration.", mood: 'neutral' },
+            { start: 332.24, end: 332.92, text: "Si je veux", mood: 'neutral' },
+            { start: 332.92, end: 334.20, text: "je te redirige directement", mood: 'neutral' },
+            { start: 334.20, end: 335.40, text: "vers le lien pour acheter", mood: 'neutral' },
+            { start: 336.12, end: 337.48, text: "et pourtant je le fais pas.", mood: 'neutral' },
+            { start: 338.00, end: 338.80, text: "Pourquoi donc ?", mood: 'neutral' },
+            { start: 339.40, end: 340.16, text: "Très bonne question", mood: 'neutral' },
+            { start: 340.16, end: 340.60, text: "Encore une fois", mood: 'neutral' },
+            { start: 340.60, end: 341.80, text: "vous posez des bonnes questions", mood: 'neutral' },
+            { start: 341.84, end: 342.68, text: "vous hein ?", mood: 'neutral' },
+            { start: 342.96, end: 343.76, text: "Pourquoi donc ?", mood: 'neutral' },
+            { start: 344.48, end: 345.16, text: "Parce que...", mood: 'neutral' },
+            { start: 345.16, end: 347.08, text: "J'ai envie de te convertir !", mood: 'neutral' },
+            { start: 347.60, end: 349.32, text: "Te faire croire que l'idée d'acheter", mood: 'neutral' },
+            { start: 349.44, end: 350.84, text: "vient de ton cerveau englué", mood: 'neutral' },
+            { start: 350.96, end: 351.76, text: "et non de moi.", mood: 'neutral' },
+            { start: 352.40, end: 353.72, text: "Alors je te laisse ici en musique", mood: 'neutral' },
+            { start: 353.88, end: 355.32, text: "avec un GROS bouton acheter", buttonState: "final", mood: 'neutral' },
+            { start: 355.32, end: 355.96, text: "Immanquable.", mood: 'neutral' },
+            { start: 356.68, end: 358.48, text: "et à toi de faire le bon choix.", mood: 'neutral' },
+            { start: 358.48, end: 359.12, text: "De cliquer.", mood: 'neutral' },
+            // MODIFICATION 1 : Ajout de la nouvelle action à la fin des sous-titres
+            { start: 359.28, end: 359.88, text: "D'acheter.", mood: 'neutral' },
+            { start: 359.88, end: 360.00, text: "", action: "playElevatorMusicAndShowGif", mood: 'neutral' },
+        ];
+
+        let currentSubtitleIndex = 0;
+        let lastActionTriggeredIndex = -1;
+
+        // --- GESTION DES ÉVÉNEMENTS ---
+
+        // Initialisation à l'ouverture de la page
+        window.addEventListener('load', () => {
+            // Initialisations de l'expérience principale
+            updateDopamineMeter();
+            createFakeCloseButton();
+            createSubtleParticles();
+            trackUserActivity();
+
+            // Initialisations de l'écran de démarrage (NOUVEAU)
+            createStartParticles();
+
+            // Écoute des événements audio pour les sous-titres
+            mainAudio.addEventListener('timeupdate', handleAudioTimeUpdate);
+            mainAudio.addEventListener('ended', handleAudioEnd);
+
+            // Empêche l'utilisateur de quitter la page avec le bouton retour du navigateur
+            history.pushState(null, null, window.location.href);
+            window.addEventListener('popstate', () => {
+                history.pushState(null, null, window.location.href);
+            });
+        });
+
+        // --- FONCTIONS DE L'ÉCRAN DE DÉMARRAGE (NOUVEAU) ---
+
+        // Gestion du clic sur le bouton "Non"
+        function handleNoClick() {
+            const noButton = document.getElementById('no-button');
+            const warning = document.getElementById('start-warning');
+            const watchingEye = document.getElementById('watching-eye');
+            const noClickAudio = document.getElementById('no-click-sound');
+            
+            if(noClickAudio) {
+                noClickAudio.currentTime = 0;
+                noClickAudio.play().catch(e => console.log('Audio no-click failed'));
+            }
+            
+            noClickCount++;
+            
+            // Afficher le message d'avertissement
+            if (noClickCount <= noMessages.length) {
+                warning.innerHTML = noMessages[noClickCount - 1];
+                warning.classList.add('visible');
+            }
+            
+            // Effets selon le nombre de clics
+            switch(noClickCount) {
+                case 1:
+                    noButton.classList.add('shaking');
+                    setTimeout(() => noButton.classList.remove('shaking'), 500);
+                    break;
+                case 2:
+                    noButton.style.transform = `translateX(${Math.random() > 0.5 ? '' : '-'}60px)`;
+                    setTimeout(() => { noButton.style.transform = ''; }, 300);
+                    break;
+                case 3:
+                    watchingEye.classList.add('visible');
+                    eyeVisible = true;
+                    break;
+                case 4:
+                    noButton.style.animation = 'buttonShake 0.3s ease-in-out infinite alternate';
+                    break;
+                case 5:
+                    noButton.textContent = "N... Oui ?";
+                    break;
+                case 6:
+                    noButton.textContent = "No-- OUI";
+                    noButton.style.color = '#ff9999';
+                    break;
+                case 7:
+                    const transformAudio = document.getElementById('transform-sound');
+                    if(transformAudio) transformAudio.play().catch(e => console.log('Audio transform failed'));
+                    
+                    noButton.classList.add('transforming');
+                    noButton.style.animation = ''; // Arrête le tremblement
+                    
+                    setTimeout(() => {
+                        noButton.textContent = "OUI";
+                        noButton.className = 'start-button yes'; // Transformation complète
+                        noButton.onclick = startExperience;
+                        warning.innerHTML = 'Voilà qui est mieux ! <span class="devil-emoji">😈</span>';
+                        warning.style.color = '#99ff99';
+                    }, 580); // Juste avant la fin de l'animation
+                    break;
+            }
+            
+            if ('vibrate' in navigator && noClickCount < 7) {
+                navigator.vibrate(50 + noClickCount * 10);
+            }
+        }
+
+        // Créer des particules flottantes pour l'ambiance de l'écran de démarrage
+        function createStartParticles() {
+            const startScreen = document.getElementById('start-screen');
+            if (!startScreen) return;
+            
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'start-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = '100%'; // Commence en bas
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                startScreen.appendChild(particle);
+            }
+        }
+
+        // Eye tracking (suit la souris)
+        document.addEventListener('mousemove', (e) => {
+            if (!eyeVisible) return;
+            
+            const eye = document.getElementById('watching-eye');
+            const pupil = document.getElementById('eye-pupil');
+            
+            if (eye && pupil) {
+                const rect = eye.getBoundingClientRect();
+                const eyeCenterX = rect.left + rect.width / 2;
+                const eyeCenterY = rect.top + rect.height / 2;
+                
+                const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                const distance = Math.min(5, Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY) / 30);
+                
+                const pupilX = Math.cos(angle) * distance;
+                const pupilY = Math.sin(angle) * distance;
+                
+                pupil.style.transform = `translate(calc(-50% + ${pupilX}px), calc(-50% + ${pupilY}px))`;
+            }
+        });
+
+        // Easter egg : Konami code
+        document.addEventListener('keydown', (e) => {
+            const startScreen = document.getElementById('start-screen');
+            if(!startScreen || startScreen.classList.contains('hidden')) return; // Ne fonctionne que sur l'écran de démarrage
+
+            konamiCode.push(e.key);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join(',') === konamiPattern.join(',')) {
+                const warning = document.getElementById('start-warning');
+                const konamiAudio = document.getElementById('konami-sound');
+
+                if (konamiAudio) konamiAudio.play().catch(e => console.log('Audio Konami failed'));
+                
+                warning.textContent = "Code secret activé ! Tu connais tes classiques...";
+                warning.style.color = '#ffd700';
+                warning.classList.add('visible');
+                
+                setTimeout(startExperience, 1500);
+            }
+        });
+
+        // --- FONCTIONS DE L'EXPÉRIENCE PRINCIPALE ---
+
+        // Fonction de démarrage de l'expérience
+        function startExperience() {
+            initAudioContext(); 
+            const startScreen = document.getElementById('start-screen');
+            
+            // Ajoute la classe pour activer le curseur custom
+            document.body.classList.add('experience-started');
+            
+            if (mainAudio) {
+                mainAudio.play().catch(e => {
+                    console.error("Audio playback failed:", e);
+                    showMetaComment("Active le son pour l'expérience complète");
+                });
+            }
+
+            if (startScreen) {
+                startScreen.classList.add('hidden');
+                setTimeout(() => {
+                    startScreen.remove();
+                }, 1000); 
+            }
+        }
+
+        /* ... LE RESTE DU JAVASCRIPT EST IDENTIQUE ET RESTE ICI ... */
+        /* [TOUT LE JS PRÉCÉDENT, de handleAudioTimeUpdate à la fin, est conservé sans modification] */
+        // Met à jour l'affichage des sous-titres en fonction du temps de l'audio
+        function handleAudioTimeUpdate() {
+            const currentTime = mainAudio.currentTime;
+            updateSubtitleDisplay(currentTime);
+        }
+
+        // Affiche le sous-titre et déclenche les actions/moods associés
+        function updateSubtitleDisplay(timeInSeconds) {
+            let foundSubtitle = false;
+            
+            // Réinitialise l'index des sous-titres si l'audio est rembobiné
+            if (currentSubtitleIndex > 0 && timeInSeconds < subtitles_data[currentSubtitleIndex].start - 0.5) {
+                currentSubtitleIndex = 0;
+                lastActionTriggeredIndex = -1;
+            }
+
+            while (currentSubtitleIndex < subtitles_data.length) {
+                const subtitle = subtitles_data[currentSubtitleIndex];
+                
+                if (timeInSeconds >= subtitle.start && timeInSeconds < subtitle.end) {
+                    if (narratorText.textContent !== subtitle.text) {
+                        narratorText.textContent = subtitle.text;
+                        // Applique la classe de mood au body
+                        document.body.className = (subtitle.mood || 'neutral') + ' experience-started'; 
+                        // Applique les styles de texte spécifiques (ex: whispering)
+                        narratorText.className = subtitle.textStyle || ''; 
+                    }
+                    
+                    foundSubtitle = true;
+
+                    // Déclenche l'action si elle n'a pas déjà été déclenchée pour ce sous-titre
+                    if (subtitle.action && currentSubtitleIndex !== lastActionTriggeredIndex) {
+                        executeAction(subtitle.action);
+                        lastActionTriggeredIndex = currentSubtitleIndex;
+                    }
+
+                    // Met à jour l'état du bouton d'achat si spécifié
+                   if (subtitle.buttonState && subtitle.buttonState !== buttonState) {
+                       updateBuyButton(subtitle.buttonState);
+                   }
+                   
+                   break; // Sort de la boucle une fois le bon sous-titre trouvé
+               } else if (timeInSeconds >= subtitle.end) {
+                   currentSubtitleIndex++; // Passe au sous-titre suivant
+               } else {
+                   break; // Le sous-titre actuel n'est pas encore atteint
+               }
+           }
+
+           // Efface le texte du narrateur s'il n'y a pas de sous-titre actif
+           if (!foundSubtitle && narratorText.textContent !== "") {
+               narratorText.textContent = "";
+               document.body.className = 'neutral experience-started'; // Retourne au mood neutre
+           }
+       }
+
+       // MODIFICATION 2 : Nouvelle fonction handleAudioEnd()
+       function handleAudioEnd() {
+            narratorText.textContent = "";
+            document.body.className = 'neutral experience-started';
+            
+            // Ne pas cacher le GIF qui est déjà affiché
+            // On laisse juste la musique continuer
+            
+            setTimeout(() => {
+                showMetaComment("Tu es vraiment resté jusqu'au bout...");
+                unlockAchievement('completionist');
+                showFinalWaitMessage(); // MODIFICATION 5 : Appel de la nouvelle fonction
+                
+                // Le visualiseur audio utilise déjà la musique d'ascenseur qui joue
+                if (audioContext && elevatorMusicPlaying) {
+                    setupMusicAnalyser();
+                    createAudioVisualizer();
+                }
+                
+                // Redirection après 8 secondes (plus de temps pour profiter du GIF)
+                setTimeout(() => {
+                    showMetaComment("Allez, c'est l'heure de découvrir Nova Lux...");
+                    setTimeout(() => {
+                        // Effet de fondu final
+                        document.body.style.transition = 'opacity 2s ease-out';
+                        document.body.style.opacity = '0';
+                        
+                        // Cache aussi le GIF progressivement
+                        if (elevatorGifContainer) {
+                            elevatorGifContainer.style.transition = 'opacity 2s ease-out';
+                            elevatorGifContainer.style.opacity = '0';
+                        }
+                        
+                        setTimeout(() => {
+                            window.location.href = AMAZON_URL;
+                        }, 2000);
+                    }, 3000);
+                }, 8000); // 8 secondes d'attente finale
+            }, 2000);
+        }
+
+       // Exécute des actions spécifiques en fonction de la narration
+       function executeAction(action) {
+           switch(action) {
+               case 'showDopamine': 
+                   document.getElementById('dopamine-meter').classList.add('visible');
+                   startDopamineDecrease(); // Start dopamine decrease once meter is visible
+                   break;
+               case 'moneyExplosion': 
+                   moneyExplosion();
+                   break;
+               case 'holyEffect': 
+                   createHolyEffect();
+                   break;
+               case 'showBuyButton': 
+                   document.querySelector('.choice-container').classList.add('visible');
+                   break;
+               case 'showMonkeyKing': 
+                   showMonkeyKing();
+                   break;
+               case 'playElevatorMusic': 
+                   playElevatorMusic();
+                   hideElevatorGif(); // Ensure previous elevator gif is hidden if triggered again without gif
+                   break;
+               case 'playElevatorMusicAndShowGif': // New action to show GIF with music
+                   playElevatorMusic();
+                   showElevatorGif();
+                   break;
+               // MODIFICATION 4 : Modifier executeAction pour ne pas cacher le GIF à la fin
+               case 'stopElevatorMusic': 
+                   stopElevatorMusic();
+                   // Ne cache le GIF que si on n'est pas à la fin (après 359s)
+                   if (mainAudio.currentTime < 359) { 
+                       hideElevatorGif();
+                   }
+                   break;
+               case 'showCoupon': 
+                   showCoupon();
+                   break;
+           }
+       }
+
+        // Met à jour le texte et le style du bouton d'achat
+        function updateBuyButton(state) {
+            const buyBtn = document.querySelector('[data-choice="buy"]');
+            if (!buyBtn) return;
+            
+            const stateConfig = buttonStates[state];
+            if (!stateConfig) return;
+            
+            buttonState = state;
+            buyBtn.textContent = stateConfig.text;
+            
+            // Retire toutes les classes d'état précédentes
+            buyBtn.className = 'choice-btn'; // Reset to base class
+            
+            // Ajoute la classe d'état spécifique
+            if (stateConfig.className) {
+                buyBtn.classList.add(stateConfig.className);
+            }
+            
+            // Vibration sur mobile pour les états agressifs
+            if (state === 'aggressive' && 'vibrate' in navigator) {
+                navigator.vibrate([50, 30, 50]);
+            }
+            
+            // Effet visuel supplémentaire pour certains états
+            if (state === 'final') {
+                createLightningEffect();
+            } else if (state === 'tempting') {
+                createGoldParticles();
+            }
+        }
+
+       // Effets visuels - Particules saintes et flash
+       function createHolyEffect() {
+           const holySound = document.getElementById('holy-sound');
+           if (holySound) holySound.play().catch(e => console.log('Holy audio failed:', e));
+           
+           for (let i = 0; i < 30; i++) {
+               setTimeout(() => {
+                   const particle = document.createElement('div');
+                   particle.className = 'holy-particle';
+                   const spread = 200;
+                   particle.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * spread) + 'px';
+                   particle.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * spread/2) + 'px';
+                   document.body.appendChild(particle);
+                   setTimeout(() => particle.remove(), 3000);
+               }, i * 50);
+           }
+           
+           const flash = document.createElement('div');
+           flash.style.cssText = `
+               position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+               background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+               pointer-events: none; z-index: 9998;
+               animation: flashFade 0.5s ease-out forwards;
+           `;
+           document.body.appendChild(flash);
+           setTimeout(() => flash.remove(), 500);
+       }
+
+       // Effets visuels - Explosion d'argent et augmentation de dopamine
+       function moneyExplosion() {
+           const moneySound = document.getElementById('money-burst-audio');
+           if (moneySound) {
+               moneySound.currentTime = 0;
+               moneySound.play().catch(e => console.log('Money audio failed:', e));
+           }
+           
+           const emojis = ['💰', '💵', '💸', '🤑', '💶', '💷'];
+           for (let i = 0; i < 15; i++) {
+               setTimeout(() => {
+                   const money = document.createElement('div');
+                   money.className = 'money-burst';
+                   money.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                   money.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 300) + 'px';
+                   money.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) + 'px';
+                   document.body.appendChild(money);
+                   setTimeout(() => money.remove(), 2000);
+               }, i * 50);
+           }
+           
+           dopamineLevel = Math.min(100, dopamineLevel + 20);
+           updateDopamineMeter();
+       }
+
+       // Affiche et masque le Roi Singe
+       function showMonkeyKing() {
+           const monkeyKing = document.getElementById('monkey-king');
+           monkeyKing.style.display = 'block';
+           
+           // Animation d'apparition
+           monkeyKing.style.transform = 'translate(-50%, -50%) scale(0)';
+           setTimeout(() => {
+               monkeyKing.style.transform = 'translate(-50%, -50%) scale(1)';
+           }, 10);
+           
+           // Animation de disparition
+           setTimeout(() => {
+               monkeyKing.style.transform = 'translate(-50%, -50%) scale(0)';
+               setTimeout(() => {
+                   monkeyKing.style.display = 'none';
+               }, 500);
+           }, 4000);
+           
+           unlockAchievement('monkey-king');
+       }
+
+       // Affiche et masque le GIF de musique d'ascenseur
+       function showElevatorGif() {
+           elevatorGifContainer.style.display = 'flex';
+           elevatorGifContainer.style.opacity = '1'; // S'assurer qu'il est visible lors de l'affichage
+       }
+
+       function hideElevatorGif() {
+           elevatorGifContainer.style.opacity = '0'; // Fondu avant de cacher
+           setTimeout(() => {
+               elevatorGifContainer.style.display = 'none';
+           }, 1000); // Correspond à la durée de transition opacity
+       }
+
+       // Affiche et masque le code promo avec des confettis
+       function showCoupon() {
+           const couponDisplay = document.getElementById('coupon-display');
+           couponDisplay.style.display = 'block';
+           
+           createConfetti();
+           
+           setTimeout(() => {
+               couponDisplay.style.animation = 'fadeOut 0.5s forwards';
+               setTimeout(() => {
+                   couponDisplay.style.display = 'none';
+                   couponDisplay.style.animation = '';
+               }, 500);
+           }, 8000);
+       }
+
+       // Initialise le contexte audio si ce n'est pas déjà fait
+       function initAudioContext() {
+           if (!audioContext) {
+               audioContext = new (window.AudioContext || window.webkitAudioContext)();
+           }
+           if (audioContext.state === 'suspended') {
+               audioContext.resume().catch(e => console.error("AudioContext resume failed:", e));
+           }
+       }
+       
+       // Configure l'analyseur pour la musique d'ascenseur (appelé au besoin)
+       function setupMusicAnalyser() {
+            if (analyser || !audioContext) return; // Ne pas configurer plusieurs fois
+            
+            try {
+                // Utilise la musique d'ascenseur comme source pour l'analyseur
+                const source = audioContext.createMediaElementSource(elevatorMusic);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256; 
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+            } catch (e) {
+                console.error("Erreur lors de la configuration de l'analyseur audio:", e);
+            }
+       }
+
+       // Joue la musique d'ascenseur
+       function playElevatorMusic() {
+           if (!elevatorMusicPlaying) {
+               if (elevatorMusic) {
+                   elevatorMusic.volume = 0.3;
+                   elevatorMusic.play().catch(e => console.log('Elevator music failed:', e));
+                   elevatorMusicPlaying = true;
+                   
+                   document.body.classList.add('waiting');
+               }
+           }
+       }
+
+       // Arrête la musique d'ascenseur avec un fade out
+       function stopElevatorMusic() {
+           if (elevatorMusic && elevatorMusicPlaying) {
+               let vol = elevatorMusic.volume;
+               const fadeOutInterval = setInterval(() => {
+                   if (vol > 0.01) {
+                       vol -= 0.05;
+                       elevatorMusic.volume = vol;
+                   } else {
+                       elevatorMusic.pause();
+                       elevatorMusic.volume = 0.3; // Reset volume for next play
+                       clearInterval(fadeOutInterval);
+                       document.body.classList.remove('waiting');
+                   }
+               }, 50);
+           }
+           elevatorMusicPlaying = false;
+       }
+
+       // Suit l'activité de l'utilisateur (temps passé, inactivité)
+       function trackUserActivity() {
+           document.addEventListener('mousemove', resetInactivityTimer);
+           document.addEventListener('click', resetInactivityTimer);
+           document.addEventListener('touchstart', resetInactivityTimer);
+           
+           setInterval(() => {
+               userProfile.timeSpent++;
+               if (userProfile.timeSpent === 60 && mainAudio && !mainAudio.paused) {
+                   showMetaComment("Une minute déjà...");
+               } else if (userProfile.timeSpent === 300) {
+                   unlockAchievement('time-waster');
+               }
+           }, 1000);
+       }
+
+       function resetInactivityTimer() {
+           clearTimeout(inactivityTimer);
+           lastInteractionTime = Date.now();
+           
+           inactivityTimer = setTimeout(() => {
+               if (mainAudio && !mainAudio.paused && mainAudio.currentTime > 30) {
+                   showMetaComment("Tu dors ou quoi ?");
+                   document.body.style.animation = 'subtleShake 0.3s';
+                   setTimeout(() => {
+                       document.body.style.animation = '';
+                   }, 300);
+               }
+           }, 15000);
+       }
+
+       function showMetaComment(text) {
+           const comment = document.createElement('div');
+           comment.className = 'meta-comment';
+           comment.textContent = text;
+           document.body.appendChild(comment);
+           setTimeout(() => comment.remove(), 3500);
+       }
+        
+       // MODIFICATION 5 : Ajouter la nouvelle fonction showFinalWaitMessage
+       function showFinalWaitMessage() {
+           const waitMessage = document.createElement('div');
+           waitMessage.style.cssText = `
+               position: fixed;
+               bottom: calc(200px + var(--safe-area-inset-bottom));
+               left: 50%;
+               transform: translateX(-50%);
+               color: rgba(255, 255, 255, 0.6);
+               font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+               text-align: center;
+               z-index: 60;
+               animation: fadeIn 2s ease-out;
+               font-style: italic;
+           `;
+           waitMessage.textContent = "Un instant, je prépare ta redirection...";
+           document.body.appendChild(waitMessage);
+           // Supprimer le message après un certain temps (par exemple, 7 secondes, car la redirection est après 8s)
+           setTimeout(() => {
+               waitMessage.remove();
+           }, 7000);
+       }
+
+
+       const achievements = {
+           'resistant': { title: '🏆 Résistant Niveau 1', desc: '5 minutes sans cliquer. Super.' },
+           'curious': { title: '🔍 Sherlock', desc: 'Tu cherches vraiment tous les secrets ?' },
+           'clicker': { title: '🖱️ Cliqueur Compulsif', desc: '100 clics. Tes doigts vont bien ?' },
+           'time-waster': { title: '⏰ Maître du Temps Perdu', desc: '5 minutes sur cette page. Productif.' },
+           'monkey-king': { title: '👑  Singix 1er ', desc: 'Tu es le roi des singes.' },
+           'completionist': { title: '🎯 Completionniste', desc: 'Tu es allé jusqu\'au bout. Pourquoi ?' },
+           'denial': { title: '🚫 Non non non', desc: 'Je ne suis pas un Écureuil' }
+       };
+
+       function unlockAchievement(type) {
+           if (userProfile.achievements.includes(type)) return;
+           userProfile.achievements.push(type);
+           const achievement = achievements[type];
+           const elem = document.createElement('div');
+           elem.className = 'achievement';
+           elem.innerHTML = `<div class="achievement-title">${achievement.title}</div><div class="achievement-desc">${achievement.desc}</div>`;
+           document.body.appendChild(elem);
+           setTimeout(() => elem.remove(), 4500);
+       }
+
+       document.addEventListener('mousemove', (e) => {
+           if (window.innerWidth > 768) {
+               mouseX = e.clientX;
+               mouseY = e.clientY;
+               if (cursor) {
+                   cursor.style.left = mouseX + 'px';
+                   cursor.style.top = mouseY + 'px';
+               }
+           }
+       });
+
+       document.addEventListener('click', (e) => {
+           userProfile.clicks++;
+           dopamineLevel = Math.min(100, dopamineLevel + 2);
+           updateDopamineMeter();
+           const burst = document.createElement('div');
+           burst.className = 'dopamine-burst';
+           burst.textContent = '+DOPA';
+           burst.style.left = e.clientX + 'px';
+           burst.style.top = e.clientY + 'px';
+           document.body.appendChild(burst);
+           setTimeout(() => burst.remove(), 1000);
+           if (userProfile.clicks === 100) {
+               unlockAchievement('clicker');
+           }
+       });
+
+       document.addEventListener('touchstart', (e) => {
+           const touch = e.touches[0];
+           const ripple = document.createElement('div');
+           ripple.className = 'tap-indicator';
+           ripple.style.left = touch.clientX + 'px';
+           ripple.style.top = touch.clientY + 'px';
+           document.body.appendChild(ripple);
+           setTimeout(() => ripple.remove(), 600);
+       });
+
+       const buyBtn = document.querySelector('[data-choice="buy"]');
+       if (buyBtn) {
+           let hoverStartTime = 0;
+           let totalHoverTime = 0;
+           buyBtn.addEventListener('mouseenter', () => {
+               hoverStartTime = Date.now();
+               userProfile.hoveredBuyButton++;
+               if(cursor) cursor.classList.add('watching');
+               buyBtn.style.transform = 'scale(1.02)';
+               if (userProfile.hoveredBuyButton === 5) showMetaComment("Tu hésites encore ?");
+               else if (userProfile.hoveredBuyButton === 10) showMetaComment("C'est juste un clic...");
+           });
+           buyBtn.addEventListener('mouseleave', () => {
+               if (hoverStartTime) totalHoverTime += Date.now() - hoverStartTime;
+               hoverStartTime = 0;
+               if(cursor) cursor.classList.remove('watching');
+               buyBtn.style.transform = '';
+               userResistanceLevel = Math.min(100, userResistanceLevel + 5);
+               if (userResistanceLevel >= 50 && !userProfile.achievements.includes('resistant')) {
+                   unlockAchievement('resistant');
+               }
+           });
+           let touchStartTime = 0;
+           buyBtn.addEventListener('touchstart', (e) => { touchStartTime = Date.now(); });
+           buyBtn.addEventListener('touchend', (e) => {
+               if (Date.now() - touchStartTime < 100) {
+                   e.preventDefault();
+                   showMetaComment("Appuie plus longtemps pour confirmer");
+               }
+           });
+       }
+
+        function createFakeCloseButton() {
+            const fakeClose = document.createElement('div');
+            fakeClose.className = 'fake-close';
+            fakeClose.innerHTML = '✕';
+            fakeClose.onclick = (e) => {
+                e.preventDefault();
+                dopamineLevel = Math.max(0, dopamineLevel - 20);
+                updateDopamineMeter();
+                const burst = document.createElement('div');
+                burst.className = 'dopamine-burst';
+                burst.style.color = '#ff0000';
+                burst.textContent = '-20%';
+                burst.style.left = e.clientX + 'px';
+                burst.style.top = e.clientY + 'px';
+                document.body.appendChild(burst);
+                setTimeout(() => burst.remove(), 1000);
+                if (dopamineLevel <= 30 && !userProfile.hasSeenWarning) {
+                    showDopamineWarning();
+                    userProfile.hasSeenWarning = true;
+                }
+                if (dopamineLevel <= 0) handleZeroDopamine();
+                showMetaComment("Fermer ? Vraiment ? 😏");
+                unlockAchievement('denial');
+            };
+            document.body.appendChild(fakeClose);
+        }
+
+       function createSubtleParticles() {
+           for (let i = 0; i < 15; i++) {
+               const particle = document.createElement('div');
+               particle.className = 'subtle-particle';
+               particle.style.left = Math.random() * 100 + '%';
+               particle.style.animationDuration = (Math.random() * 20 + 20) + 's';
+               particle.style.animationDelay = Math.random() * 20 + 's';
+               document.body.appendChild(particle);
+           }
+       }
+
+       function createConfetti() {
+           const colors = ['#ff0', '#0f0', '#f0f', '#0ff', '#fff'];
+           for (let i = 0; i < 30; i++) {
+               const confetti = document.createElement('div');
+               confetti.style.cssText = `position: fixed; width: 10px; height: 10px; background: ${colors[Math.floor(Math.random() * colors.length)]}; left: ${window.innerWidth / 2}px; top: ${window.innerHeight / 2}px; pointer-events: none; z-index: 9999;`;
+               document.body.appendChild(confetti);
+               const angle = (Math.PI * 2 * i) / 30;
+               const velocity = 200 + Math.random() * 200;
+               const lifetime = 1000 + Math.random() * 1000;
+               let start = Date.now();
+               const animate = () => {
+                   const elapsed = Date.now() - start;
+                   const progress = elapsed / lifetime;
+                   if (progress < 1) {
+                       const x = Math.cos(angle) * velocity * progress;
+                       const y = Math.sin(angle) * velocity * progress + (progress * progress * 300);
+                       confetti.style.transform = `translate(${x}px, ${y}px) rotate(${progress * 720}deg)`;
+                       confetti.style.opacity = 1 - progress;
+                       requestAnimationFrame(animate);
+                   } else {
+                       confetti.remove();
+                   }
+               };
+               requestAnimationFrame(animate);
+           }
+       }
+
+       function updateDopamineMeter() {
+           const meter = document.querySelector('.meter-fill');
+           const meterContainer = document.getElementById('dopamine-meter');
+           if (!meter || !meterContainer) return;
+           
+           meter.style.width = dopamineLevel + '%';
+           
+           // Ajoute/retire la classe critical
+           if (dopamineLevel <= 20) {
+               meterContainer.classList.add('critical');
+           } else {
+               meterContainer.classList.remove('critical');
+           }
+           
+           // Ajuste le gradient en fonction du niveau
+           if (dopamineLevel > 80) {
+               meter.style.filter = 'hue-rotate(-20deg) brightness(1.2)';
+           } else if (dopamineLevel > 50) {
+               meter.style.filter = 'hue-rotate(0deg) brightness(1)';
+           } else if (dopamineLevel > 20) {
+               meter.style.filter = 'hue-rotate(20deg) brightness(0.9)';
+           } else {
+               meter.style.filter = 'hue-rotate(40deg) brightness(0.8) saturate(1.5)';
+           }
+       }
+
+       function startDopamineDecrease() {
+           if (dopamineDecreaseInterval) clearInterval(dopamineDecreaseInterval);
+           dopamineDecreaseInterval = setInterval(() => {
+               if (dopamineLevel > 0) {
+                   dopamineLevel = Math.max(0, dopamineLevel - 1);
+                   updateDopamineMeter();
+                   if (dopamineLevel === 0) handleZeroDopamine();
+               } else if (dopamineLevel === 0) {
+                   handleZeroDopamine();
+               }
+           }, 2000); 
+       }
+
+       function stopDopamineDecrease() {
+           if (dopamineDecreaseInterval) {
+               clearInterval(dopamineDecreaseInterval);
+               dopamineDecreaseInterval = null;
+           }
+       }
+
+       function handleZeroDopamine() {
+           if (hasReachedZeroDopamine) return;
+           hasReachedZeroDopamine = true;
+           stopDopamineDecrease();
+           stopElevatorMusic();
+           hideElevatorGif();
+           showMetaComment("Dopamine à zéro. Redirection imminente.");
+           document.getElementById('narrator').style.opacity = '0';
+           document.getElementById('dopamine-meter').style.opacity = '0';
+           document.querySelector('.choice-container').style.opacity = '0';
+           const fakeClose = document.querySelector('.fake-close');
+           if (fakeClose) fakeClose.remove();
+           const secretExit = document.getElementById('secret-exit');
+           if (secretExit) secretExit.remove();
+           document.getElementById('monkey-king').style.display = 'none';
+           setTimeout(() => {
+               document.body.style.transition = 'opacity 2s ease-out';
+               document.body.style.opacity = '0';
+               setTimeout(() => { window.location.href = AMAZON_URL; }, 2000);
+           }, 3000);
+       }
+
+        function createLightningEffect() {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const lightning = document.createElement('div');
+                    lightning.style.cssText = `position: fixed; width: 2px; height: 100vh; background: linear-gradient(to bottom, transparent, #fff, transparent); left: ${Math.random() * window.innerWidth}px; top: 0; opacity: 0; pointer-events: none; z-index: 9999; animation: lightningStrike 0.3s ease-out forwards;`;
+                    document.body.appendChild(lightning);
+                    setTimeout(() => lightning.remove(), 300);
+                }, i * 100);
+            }
+        }
+
+        function createGoldParticles() {
+            const button = document.querySelector('.choice-btn');
+            if (!button) return;
+            const rect = button.getBoundingClientRect();
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `position: fixed; width: 6px; height: 6px; background: #ffd700; border-radius: 50%; left: ${rect.left + rect.width / 2}px; top: ${rect.top + rect.height / 2}px; pointer-events: none; z-index: 201; --dx: ${(Math.random() - 0.5) * 100}px; --dy: ${-100 - Math.random() * 50}px; animation: goldFloat 2s ease-out forwards;`;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 2000);
+            }
+        }
+       
+        function showDopamineWarning() {
+            const warning = document.getElementById('dopamine-warning');
+            warning.style.display = 'block';
+            if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 500]);
+            setTimeout(() => { warning.style.display = 'none'; }, 4000);
+        }
+
+        function createAudioVisualizer() {
+            if (!audioContext) return;
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; opacity: 0.1;`;
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            function draw() {
+                requestAnimationFrame(draw);
+                if (!analyser) return;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                const barWidth = canvas.width / bufferLength;
+                for (let i = 0; i < bufferLength; i++) {
+                    const value = dataArray[i];
+                    const percent = value / 255;
+                    const height = canvas.height * percent;
+                    const offset = canvas.height - height - 1;
+                    const hue = i / bufferLength * 360;
+                    ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.8)`;
+                    ctx.fillRect(i * barWidth, offset, barWidth, height);
+                }
+            }
+            draw();
+        }
+
+       function secretExit() {
+           if (confirm("Vraiment ? Après tout ça ?")) {
+               showMetaComment("Au revoir, Singix...");
+               setTimeout(() => {
+                   document.body.style.transition = 'opacity 1s';
+                   document.body.style.opacity = '0';
+                   setTimeout(() => { window.location.href = 'about:blank'; }, 1000);
+               }, 1000);
+           } else {
+               showMetaComment("Je savais que tu resterais.");
+               unlockAchievement('curious');
+           }
+       }
+
+       document.addEventListener('keydown', (e) => {
+           if (e.key === 'Escape' || (e.ctrlKey && (e.key === 'w' || e.key === 'W'))) {
+               e.preventDefault();
+               showMetaComment("Il n'y a pas d'échappatoire.");
+           }
+       });
+
+       document.addEventListener('contextmenu', (e) => {
+           e.preventDefault();
+           showMetaComment("Pas de clic droit ici.");
+       });
+
+   </script>
+</body>
+</html>
