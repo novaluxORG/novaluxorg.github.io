@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Lux - Le Défi</title>
     <meta name="description" content="Participe au Défi Nova Lux et connecte-toi à ta lumière intérieure.">
+    <meta name="keywords" content="nova lux, défi, lumière intérieure, méditation, bien-être">
+    <meta property="og:title" content="Nova Lux Challenge">
+    <meta property="og:description" content="Éveille ta lumière intérieure avec cette expérience immersive.">
+    <meta property="og:image" content="images/logo.png">
     
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="apple-touch-icon" href="images/logo.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,27 +25,40 @@
             --gray: #888888;
             --font-main: 'Inter', sans-serif;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html.lenis { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto !important; }
-
         body {
             font-family: var(--font-main);
             background: var(--black);
             color: var(--off-white);
             line-height: 1.5; -webkit-font-smoothing: antialiased;
-            cursor: none; overflow: hidden; /* Prevent scrollbars */
+            cursor: none; overflow: hidden;
         }
-
-        /* --- PARTICLES & CURSOR --- */
+        /* Progress Bar */
+        #progress-bar {
+            position: fixed; top: 0; left: 0; width: 0; height: 4px; background: var(--gold); transition: width 0.5s ease;
+            z-index: 10000;
+        }
+        /* Particles & Cursor */
         #particle-trail-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         .cursor, .cursor-follower { will-change: transform; pointer-events: none; }
         .cursor { position: fixed; width: 32px; height: 32px; border: 1px solid var(--gray); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9999; transition: all 0.2s ease; }
         .cursor-follower { position: fixed; width: 8px; height: 8px; background-color: var(--white); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9998; transition: transform 0.1s linear; mix-blend-mode: difference; }
         body.cursor-hover .cursor { width: 64px; height: 64px; background-color: rgba(212, 175, 55, 0.5); border-color: transparent; }
         
-        /* --- CHALLENGE CONTAINER & STEPS --- */
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            body { cursor: default; } /* Disable custom cursor on mobile */
+            #particle-trail-canvas { display: none; } /* Disable particles on mobile for perf */
+            .challenge-title { font-size: 2rem; }
+            .challenge-instruction { font-size: 1.5rem; }
+            .challenge-text { font-size: 1rem; }
+            .breathing-animation { width: 150px; height: 150px; }
+            .cta-button { padding: 12px 30px; font-size: 1rem; }
+        }
+        
+        /* Challenge Container & Steps */
         #challenge-container {
             display: flex; align-items: center; justify-content: center;
             min-height: 100vh; width: 100%; padding: 40px; position: relative;
@@ -53,128 +69,105 @@
             transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .challenge-step.active { opacity: 1; pointer-events: auto; transform: scale(1); }
-
         .challenge-logo { width: 50px; height: auto; margin-bottom: 24px; }
         .challenge-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px; }
         .challenge-instruction { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
         .challenge-text { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--gray); max-width: 45ch; margin: 0 auto 32px auto; }
-
-        /* --- BUTTONS --- */
+        
+        /* Buttons */
         .cta-button { display: inline-block; padding: 18px 40px; background: var(--gold); color: var(--black); text-decoration: none; font-weight: 600; font-size: 1.1rem; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: none; cursor: none; }
         .cta-button:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4); }
         .cta-secondary { background: transparent; color: var(--gray); border: 1px solid var(--gray); }
         .cta-secondary:hover { background: var(--white); color: var(--black); border-color: var(--white); box-shadow: none; }
+        .back-btn { position: absolute; top: 20px; left: 20px; font-size: 0.9rem; color: var(--gray); text-decoration: none; opacity: 0.7; transition: opacity 0.3s; }
+        .back-btn:hover { opacity: 1; }
         
-        /* --- BREATHING ANIMATION --- */
+        /* Breathing Animation */
         .breathing-animation { position: relative; width: 200px; height: 200px; margin: 32px auto; display: flex; align-items: center; justify-content: center; }
-        .breathing-circle { width: 100%; height: 100%; border-radius: 50%; background: var(--gold); animation: breathe 8s ease-in-out infinite; }
+        .breathing-circle { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(to right, var(--gold), #FFD700); animation: breathe 8s ease-in-out infinite; }
         .breathing-text { position: absolute; color: var(--black); font-weight: 500; }
         @keyframes breathe { 0% { transform: scale(0.4); opacity: 0.4; } 50% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(0.4); opacity: 0.4; } }
-
-        /* --- BEAUTY WORD INPUT --- */
-        .input-instruction { font-size: 0.9rem; color: var(--gray); margin-top: 40px; margin-bottom: 10px;}
-        #beauty-word-input { background: transparent; border: none; border-bottom: 2px solid var(--gray); color: var(--white); font-size: 2rem; font-weight: 500; text-align: center; width: 100%; max-width: 400px; padding: 10px; outline: none; transition: border-color 0.3s ease; }
-        #beauty-word-input:focus { border-color: var(--gold); }
-
-        /* --- VIDEO STEP --- */
-        .video-section-title {
-            color: var(--gray);
-            font-weight: 400;
-            font-size: clamp(1.2rem, 3vw, 1.8rem); /* Taille de police adaptée */
-            margin-bottom: 32px;
-            transition: opacity 0.6s ease-in-out; /* Transition pour le fondu */
-            min-height: 1.5em; /* Empêche le saut de mise en page */
-        }
-        .video-wrapper {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
+        
+        /* Beauty Word Input */
+        .input-instruction { font-size: 0.9rem; color: var(--gray); margin-top: 40px; margin-bottom: 10px; }
+        #beauty-word-input { background: transparent; border: none; border-bottom: 2px solid var(--gray); color: var(--white); font-size: 2rem; font-weight: 500; text-align: center; width: 100%; max-width: 400px; padding: 10px; outline: none; transition: border-color 0.3s ease, transform 0.3s ease; }
+        #beauty-word-input:focus { border-color: var(--gold); transform: scale(1.05); }
+        #submit-word-btn { margin-top: 20px; padding: 10px 20px; background: var(--gold); color: var(--black); border: none; border-radius: 30px; cursor: pointer; transition: transform 0.3s; }
+        #submit-word-btn:hover { transform: scale(1.05); }
+        
+        /* Video Step */
+        .video-section-title { color: var(--gray); font-weight: 400; font-size: clamp(1.2rem, 3vw, 1.8rem); margin-bottom: 32px; transition: opacity 0.6s ease-in-out; min-height: 1.5em; }
+        .video-wrapper { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
         #youtube-player { width: 100%; height: 100%; }
-        
-        .user-word-anchor {
-            margin-top: 24px;
-            font-size: 1.1rem;
-            color: var(--gray);
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 1s ease, transform 1s ease;
-        }
+        .user-word-anchor { margin-top: 24px; font-size: 1.1rem; color: var(--gray); opacity: 0; transform: translateY(10px); transition: opacity 1s ease, transform 1s ease; }
         .user-word-anchor.visible { opacity: 1; transform: translateY(0); }
-        .user-word-anchor span {
-            font-style: italic;
-            color: var(--gold);
-            text-transform: capitalize;
-        }
-        
-        .final-actions {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1.5s ease, transform 1.5s ease;
-        }
+        .user-word-anchor span { font-style: italic; color: var(--gold); text-transform: capitalize; }
+        .final-actions { margin-top: 40px; display: flex; justify-content: center; gap: 16px; opacity: 0; transform: translateY(20px); transition: opacity 1.5s ease, transform 1.5s ease; }
         .final-actions.visible { opacity: 1; transform: translateY(0); }
-
+        
+        /* Feedback Toast */
+        #feedback-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--black); padding: 10px 20px; border-radius: 30px; opacity: 0; transition: opacity 0.5s; }
+        #feedback-toast.visible { opacity: 1; }
     </style>
 </head>
 <body>
-    
+    <div id="progress-bar"></div>
     <canvas id="particle-trail-canvas"></canvas>
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
+    <div id="feedback-toast"></div>
 
-    <main id="challenge-container">
+    <main id="challenge-container" aria-live="polite">
         <!-- Étape 1: Introduction -->
-        <div class="challenge-step active" data-step="1">
-            <a href="index.html" class="back-to-home-link interactive" title="Retour à l'accueil Nova Lux">
-                <img src="images/logo.png" alt="Nova Lux" class="challenge-logo">
+        <div class="challenge-step active" data-step="1" aria-hidden="false">
+            <a href="index.html" class="back-to-home-link interactive" title="Retour à l'accueil Nova Lux" aria-label="Retour à l'accueil Nova Lux">
+                <img src="images/logo.png" alt="Logo Nova Lux" class="challenge-logo">
             </a>
             <h1 class="challenge-title">Nova Lux Challenge</h1>
             <p class="challenge-text">Laisse-toi guider. Le seul clic nécessaire est celui-ci.</p>
-            <button id="start-challenge-btn" class="cta-button interactive">Commencer</button>
+            <button id="start-challenge-btn" class="cta-button interactive" aria-label="Commencer le défi">Commencer</button>
         </div>
 
         <!-- Étape 2: Détente -->
-        <div class="challenge-step" data-step="2">
+        <div class="challenge-step" data-step="2" aria-hidden="true">
+            <a href="#" class="back-btn interactive" onclick="goToStep(currentStepIndex - 1)" aria-label="Revenir à l'étape précédente">← Revenir</a>
             <h2 class="challenge-instruction">Détends-toi</h2>
             <p class="challenge-text">Prends un instant, juste pour toi. Rien d'autre n'a d'importance maintenant.</p>
         </div>
 
         <!-- Étape 3: Respiration -->
-        <div class="challenge-step" data-step="3">
+        <div class="challenge-step" data-step="3" aria-hidden="true">
+            <a href="#" class="back-btn interactive" onclick="goToStep(currentStepIndex - 1)" aria-label="Revenir à l'étape précédente">← Revenir</a>
             <h2 class="challenge-instruction">Respire</h2>
             <p class="challenge-text">Suis le rythme. Inspire quand le cercle grandit, expire quand il se rétracte.</p>
-            <div class="breathing-animation">
+            <div class="breathing-animation" aria-label="Animation de respiration guidée">
                 <div class="breathing-circle"></div>
                 <span class="breathing-text"></span>
             </div>
         </div>
 
         <!-- Étape 4: Beauté -->
-        <div class="challenge-step" data-step="4">
+        <div class="challenge-step" data-step="4" aria-hidden="true">
+            <a href="#" class="back-btn interactive" onclick="goToStep(currentStepIndex - 1)" aria-label="Revenir à l'étape précédente">← Revenir</a>
             <h2 class="challenge-instruction">La Beauté</h2>
             <p class="challenge-text">Pense à une chose, une personne ou un souvenir qui incarne la beauté pour toi. Écris un seul mot pour le représenter.</p>
             <form id="word-form">
-                <input type="text" id="beauty-word-input" placeholder="Ton mot ici..." autocomplete="off" required>
-                <p class="input-instruction">Appuie sur Entrée pour continuer</p>
+                <input type="text" id="beauty-word-input" placeholder="Ton mot ici..." autocomplete="off" required aria-label="Saisir un mot représentant la beauté" autocapitalize="sentences">
+                <p class="input-instruction">Appuie sur Entrée ou clique pour continuer</p>
+                <button type="submit" id="submit-word-btn" class="cta-button interactive" aria-label="Soumettre le mot">Continuer</button>
             </form>
         </div>
 
         <!-- Étape 5: Préparation -->
-        <div class="challenge-step" data-step="5">
-             <h2 class="challenge-instruction">Ton mot est ancré.</h2>
-             <p class="challenge-text">Maintenant, prépare-toi. Laisse la musique t'envelopper.</p>
+        <div class="challenge-step" data-step="5" aria-hidden="true">
+            <a href="#" class="back-btn interactive" onclick="goToStep(currentStepIndex - 1)" aria-label="Revenir à l'étape précédente">← Revenir</a>
+            <h2 class="challenge-instruction">Ton mot est ancré.</h2>
+            <p class="challenge-text">Maintenant, prépare-toi. Laisse la musique t'envelopper.</p>
         </div>
 
         <!-- Étape 6: VIDÉO -->
-        <div class="challenge-step" data-step="6">
-             <h2 class="challenge-instruction video-section-title" id="video-title-message">Ton Immersion Commence.</h2>
+        <div class="challenge-step" data-step="6" aria-hidden="true">
+            <h2 class="challenge-instruction video-section-title" id="video-title-message">Ton Immersion Commence.</h2>
             <div class="video-wrapper interactive">
                 <div id="youtube-player"></div>
             </div>
@@ -182,8 +175,8 @@
                 Ton mot d'ancrage : <span id="user-word-display"></span>
             </div>
             <div class="final-actions" id="final-actions">
-                 <a href="https://discord.gg/c9PgVsR5jX" target="_blank" class="cta-button interactive">J'ai Vibré !</a>
-                 <a href="index.html" class="cta-button cta-secondary interactive">Retour à l'Accueil</a>
+                <a href="https://discord.gg/c9PgVsR5jX" target="_blank" class="cta-button interactive" aria-label="Rejoindre la communauté après vibration">J'ai Vibré !</a>
+                <a href="index.html" class="cta-button cta-secondary interactive" aria-label="Retour à l'accueil">Retour à l'Accueil</a>
             </div>
         </div>
     </main>
@@ -218,10 +211,13 @@
         const userWordAnchor = document.getElementById('user-word-anchor');
         const userWordDisplay = document.getElementById('user-word-display');
         const finalActions = document.getElementById('final-actions');
+        const progressBar = document.getElementById('progress-bar');
+        const feedbackToast = document.getElementById('feedback-toast');
         
         let currentStepIndex = 0;
-        let userBeautyWord = '';
+        let userBeautyWord = localStorage.getItem('beautyWord') || '';
         let ytPlayer;
+        const totalSteps = steps.length;
 
         // --- YOUTUBE API & TIMED MESSAGES ---
         const videoTitleMessage = document.getElementById('video-title-message');
@@ -248,7 +244,8 @@
                 height: '100%', width: '100%', videoId: 'XH6IT_tsSUI',
                 playerVars: {
                     'autoplay': 1, 'controls': 1,
-                    'rel': 0, 'showinfo': 0, 'modestbranding': 1, 'iv_load_policy': 3
+                    'rel': 0, 'showinfo': 0, 'modestbranding': 1, 'iv_load_policy': 3,
+                    'mute': 0 // Start unmuted, but can add toggle if needed
                 },
                 events: { 
                     'onStateChange': onPlayerStateChange,
@@ -278,7 +275,7 @@
                 setTimeout(() => {
                     videoTitleMessage.textContent = messageToShow;
                     videoTitleMessage.style.opacity = '1';
-                }, 400); // Should be half of the CSS transition duration
+                }, 400);
             }
         }
 
@@ -295,13 +292,15 @@
         }
 
         // --- CORE NAVIGATION LOGIC ---
-        function goToStep(index) {
-            if (steps[currentStepIndex]) steps[currentStepIndex].classList.remove('active');
+        window.goToStep = function(index) { // Make global for back-btn
+            if (index < 0 || index >= totalSteps) return;
+            steps[currentStepIndex].classList.remove('active');
+            steps[currentStepIndex].setAttribute('aria-hidden', 'true');
             currentStepIndex = index;
-            if (steps[currentStepIndex]) {
-                steps[currentStepIndex].classList.add('active');
-                handleStepLogic(currentStepIndex);
-            }
+            steps[currentStepIndex].classList.add('active');
+            steps[currentStepIndex].setAttribute('aria-hidden', 'false');
+            progressBar.style.width = `${(currentStepIndex / (totalSteps - 1)) * 100}%`;
+            handleStepLogic(currentStepIndex);
         }
 
         function handleStepLogic(index) {
@@ -313,13 +312,23 @@
                 case 3: 
                     setTimeout(() => wordInput.focus(), 500); 
                     break;
-                case 4: setTimeout(() => goToStep(5), 6000); break;
+                case 4: 
+                    showFeedback('Mot ancré avec succès !');
+                    localStorage.setItem('beautyWord', userBeautyWord);
+                    setTimeout(() => goToStep(5), 6000); 
+                    break;
                 case 5:
                     userWordDisplay.textContent = userBeautyWord;
-                    createPlayer();
+                    createPlayer(); // Lazy create
                     setTimeout(() => { userWordAnchor.classList.add('visible'); }, 1000);
                     break;
             }
+        }
+
+        function showFeedback(message) {
+            feedbackToast.textContent = message;
+            feedbackToast.classList.add('visible');
+            setTimeout(() => feedbackToast.classList.remove('visible'), 3000);
         }
 
         startBtn.addEventListener('click', () => {
@@ -330,7 +339,8 @@
         wordForm.addEventListener('submit', (e) => {
             e.preventDefault();
             userBeautyWord = wordInput.value.trim();
-            if(userBeautyWord) goToStep(4);
+            if (userBeautyWord) goToStep(4);
+            else showFeedback('Veuillez entrer un mot valide.');
         });
         
         // --- UI & ANIMATIONS ---
@@ -349,14 +359,15 @@
             if (cursor) cursor.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
             requestAnimationFrame(animateCursor);
         }
-        animateCursor();
+        if (!('ontouchstart' in window)) animateCursor(); // Disable cursor anim on touch devices
+
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
             el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
         });
         
         const trailCanvas = document.getElementById('particle-trail-canvas');
-        if (trailCanvas) {
+        if (trailCanvas && !('ontouchstart' in window)) { // Disable on touch
             const ctx = trailCanvas.getContext('2d'); let particles = [];
             function setCanvasSize() { trailCanvas.width = window.innerWidth; trailCanvas.height = window.innerHeight; }
             setCanvasSize(); window.addEventListener('resize', setCanvasSize);
