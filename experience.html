@@ -282,7 +282,7 @@
             }
         }
         
-        /* --- FIN DES NOUVEAUX STYLES POUR L'ÉCRAN DE DÉMARRAGE --- */
+
 
         /* Narrateur */
         #narrator {
@@ -316,8 +316,7 @@
             word-wrap: break-word;
         }
         
-        /* ... LE RESTE DU CSS EST IDENTIQUE ET RESTE ICI ... */
-        /* [TOUT LE CSS PRÉCÉDENT, DE @keyframes fadeIn à la fin, est conservé sans modification] */
+  
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -1486,7 +1485,7 @@
             { start: 193.40, end: 194.20, text: "Elle m'avait mis devant", mood: 'neutral' },
             { start: 194.20, end: 194.84, text: "un plat de soupe", mood: 'neutral' },
             { start: 194.84, end: 195.68, text: "que je ne voulais pas manger", mood: 'neutral' },
-            { start: 195.88, end: 197.20, text: "Une soupe au poids cassé.", mood: 'neutral' },
+            { start: 195.88, end: 197.20, text: "Une soupe au pois cassé.", mood: 'neutral' },
             { start: 197.20, end: 197.92, text: "Je déteste ça", mood: 'neutral' },
             { start: 198.60, end: 199.48, text: "Et elle m'a dit", mood: 'neutral' },
             { start: 199.76, end: 201.20, text: "\"Tu ne quitteras pas la pièce", mood: 'neutral' },
@@ -2122,20 +2121,7 @@
            }, 1000);
        }
 
-       function resetInactivityTimer() {
-           clearTimeout(inactivityTimer);
-           lastInteractionTime = Date.now();
-           
-           inactivityTimer = setTimeout(() => {
-               if (mainAudio && !mainAudio.paused && mainAudio.currentTime > 30) {
-                   showMetaComment("Tu dors ou quoi ?");
-                   document.body.style.animation = 'subtleShake 0.3s';
-                   setTimeout(() => {
-                       document.body.style.animation = '';
-                   }, 300);
-               }
-           }, 15000);
-       }
+  
 
        function showMetaComment(text) {
            const comment = document.createElement('div');
