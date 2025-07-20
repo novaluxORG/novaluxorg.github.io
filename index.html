@@ -194,115 +194,6 @@
         .reveal-item.is-inview { opacity: 1; transform: translateY(0); }
         
         /* --- GLITCH EFFECT --- */
-        .glitch-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--black);
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-
-        .glitch-overlay.active {
-            display: block;
-            pointer-events: all;
-            animation: glitchStatic 0.3s infinite;
-        }
-
-        @keyframes glitchStatic {
-            0%, 100% { background: var(--black); }
-            10% { background: #ff0000; }
-            30% { background: #00ff00; }
-            50% { background: #0000ff; }
-            70% { background: #ffffff; }
-            90% { background: var(--black); }
-        }
-
-        .glitch-content {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10001;
-            text-align: center;
-            display: none;
-        }
-
-        .glitch-content.active {
-            display: block;
-        }
-
-        .glitch-text {
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            font-weight: 800;
-            color: #ff0000;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            line-height: 1.2;
-            margin-bottom: 40px;
-            text-shadow: 
-                2px 2px 0 #00ff00,
-                -2px -2px 0 #0000ff,
-                0 0 20px rgba(255, 0, 0, 0.8);
-            animation: glitchText 0.5s infinite alternate;
-        }
-
-        @keyframes glitchText {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        .glitch-button {
-            display: inline-block;
-            padding: 20px 60px;
-            background: #ff0000;
-            color: var(--black);
-            text-decoration: none;
-            font-weight: 900;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            border: 3px solid var(--white);
-            position: relative;
-            overflow: hidden;
-            animation: glitchButton 0.3s infinite;
-        }
-
-        @keyframes glitchButton {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.1) rotate(-1deg); }
-            50% { transform: scale(0.95) rotate(1deg); }
-            75% { transform: scale(1.05) rotate(-0.5deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .glitch-button::before {
-            content: 'CLIQUE CLIQUE CLIQUE';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--black);
-            color: #ff0000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: slideGlitch 2s infinite linear;
-        }
-
-        @keyframes slideGlitch {
-            to { left: 100%; }
-        }
-
-        /* Glitch effect on main content */
         body.glitching * {
             animation: contentGlitch 0.2s infinite;
         }
@@ -335,80 +226,13 @@
                     0 0 20px rgba(0, 255, 0, 0.8);
             }
         }
-
-        /* ASCII rain effect */
-        .ascii-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            pointer-events: none;
-            overflow: hidden;
-            display: none;
-        }
-
-        .ascii-rain.active {
-            display: block;
-        }
-
-        .ascii-drop {
-            position: absolute;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 20px;
-            animation: drop 2s linear infinite;
-            text-shadow: 0 0 5px #00ff00;
-        }
-
-        @keyframes drop {
-            to { transform: translateY(100vh); }
-        }
         
-        /* --- CHAOTIC GLITCH EFFECTS (NEW) --- */
-        .screen-crack {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9997;
-            background-image: 
-                linear-gradient(45deg, transparent 30%, rgba(255,0,0,0.1) 30%, rgba(255,0,0,0.1) 31%, transparent 31%),
-                linear-gradient(-45deg, transparent 40%, rgba(0,255,0,0.1) 40%, rgba(0,255,0,0.1) 41%, transparent 41%);
-            background-size: 30px 30px;
-            animation: crackMove 0.5s infinite;
-            display: none; /* Hidden by default */
+        /* --- NOUVELLE CLASSE POUR LE FADE OUT --- */
+        body.fading-out {
+            transition: opacity 1.5s ease-out;
+            opacity: 0;
         }
 
-        @keyframes crackMove {
-            0%, 100% { transform: translate(0, 0); }
-            25% { transform: translate(-5px, 5px); }
-            50% { transform: translate(5px, -5px); }
-            75% { transform: translate(-5px, -5px); }
-        }
-
-        .fake-button {
-            position: fixed;
-            padding: 15px 40px;
-            background: #ff0000;
-            color: #000;
-            font-weight: 900;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            border: 2px solid #fff;
-            cursor: pointer;
-            z-index: 10002;
-            animation: fakeButtonPulse 0.2s infinite;
-            transition: transform 0.3s ease;
-        }
-
-        @keyframes fakeButtonPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-        }
 
         /* --- RESPONSIVE --- */
         @media (max-width: 900px) {
@@ -657,38 +481,13 @@
         </div>
     </footer>
     
-    <!-- Glitch Overlay -->
-    <div class="glitch-overlay" id="glitch-overlay"></div>
-    <div class="glitch-content" id="glitch-content">
-        <div class="glitch-text">
-            ACHÈTE MON LIVRE.<br>
-            CLIQUE.<br>
-            TU VEUX COMPRENDRE.<br>
-            UN ROMAN QUI PARLE DE SECTE.<br>
-            D'IA (PAR UN VRAI EXPERT).<br>
-            TU N'AS JAMAIS LU ÇA.<br>
-            CLIQUE.<br>
-            MAINTENANT.<br>
-            TOUT DE SUITE.
-        </div>
-        <a href="https://www.amazon.fr/dp/B0D9S5QDF8" target="_blank" class="glitch-button" id="glitch-button">
-            ACHÈTE MAINTENANT
-        </a>
-    </div>
-    <div class="ascii-rain" id="ascii-rain"></div>
-    <div class="screen-crack" id="screen-crack"></div>
-    
     <!-- Library Scripts -->
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <!-- Main Script -->
     <script>
-        // --- Glitch Audio File ---
-        const glitchAudio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBz2Gy/DYjiMFl2232Os+Aw0/kc7hgzwOT6vn1apdFwVTq9vav2kE');
-        glitchAudio.loop = true;
-        glitchAudio.volume = 0;
-
+        // --- NOTE : La section du "glitch" à la fin de cette page a été modifiée pour une transition douce ---
 
         // --- YOUTUBE API FOR AUTOPLAY WITH SOUND ---
         let testimonialPlayer;
@@ -992,196 +791,52 @@
                 animateTrail();
             }
 
-            // --- ALL HELL BREAKS LOOSE SECTION (GLITCH) ---
+            // --- SECTION DU GLITCH ET DE LA REDIRECTION (MODIFIÉE) ---
             let hasGlitched = false;
-            const glitchTriggerOffset = 200;
+            const glitchTriggerOffset = 100; // Déclenche un peu avant d'atteindre le fond
 
             function checkScrollEnd() {
-                const scrollPosition = window.pageYOffset + window.innerHeight;
+                // S'assure que lenis est initialisé
+                if (!lenis) return;
+                
+                // Utilise la position de scroll de Lenis pour plus de précision
+                const scrollPosition = lenis.scroll + window.innerHeight;
                 const documentHeight = document.documentElement.scrollHeight;
+
                 if (!hasGlitched && scrollPosition >= documentHeight - glitchTriggerOffset) {
                     triggerGlitch();
                     hasGlitched = true;
                 }
             }
+            
+            // Écoute l'événement de scroll de Lenis au lieu de celui de la fenêtre
+            lenis.on('scroll', checkScrollEnd);
 
-            // --- CHAOS FUNCTIONS (NEW) ---
-            function spawnFakeButtons() {
-                const messages = ['ACHÈTE', 'CLIQUE ICI', 'MAINTENANT', '€€€', 'VITE'];
-                setInterval(() => {
-                    const fakeBtn = document.createElement('div');
-                    fakeBtn.className = 'fake-button';
-                    fakeBtn.textContent = messages[Math.floor(Math.random() * messages.length)];
-                    fakeBtn.style.left = Math.random() * 80 + 10 + '%';
-                    fakeBtn.style.top = Math.random() * 80 + 10 + '%';
-                    document.body.appendChild(fakeBtn);
-                    fakeBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent body click event
-                        fakeBtn.style.transform = 'scale(0) rotate(720deg)';
-                        setTimeout(() => fakeBtn.remove(), 300);
-                    });
-                    setTimeout(() => { if (fakeBtn) fakeBtn.remove(); }, 5000);
-                }, 800);
-            }
-
-            function subliminalMessages() {
-                const messages = ['CONSOMME', 'OBÉIS', 'ACHÈTE', 'DÉPENSE', 'NE RÉFLÉCHIS PAS', 'CLIQUE', '€€€€€'];
-                setInterval(() => {
-                    const msg = document.createElement('div');
-                    msg.textContent = messages[Math.floor(Math.random() * messages.length)];
-                    msg.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 900; color: rgba(255, 0, 0, 0.8); z-index: 9998; pointer-events: none; text-shadow: 0 0 50px red;`;
-                    document.body.appendChild(msg);
-                    setTimeout(() => msg.remove(), 50); // Flash de 50ms
-                }, 3000);
-            }
-
-            function fakeSystemAlert() {
-                const fakeAlert = document.createElement('div');
-                fakeAlert.innerHTML = `<div style="background: #fff; border: 2px solid #000; padding: 20px; font-family: Arial, sans-serif; box-shadow: 10px 10px 0 black;"><div style="background: blue; color: white; margin: -20px -20px 10px; padding: 5px;">⚠️ Windows Security Alert</div><p style="color: black;">VIRUS DETECTED: Your_Soul.exe</p><p style="color: black;">Solution: ACHETER LE LIVRE MAINTENANT</p><button onclick="this.parentElement.parentElement.remove()" style="background: #ccc; border: 2px solid #000; padding: 5px 20px; cursor: pointer;">OK</button></div>`;
-                fakeAlert.style.cssText = `position: fixed; top: ${Math.random() * 50 + 25}%; left: ${Math.random() * 50 + 25}%; z-index: 10004; transform: translate(-50%, -50%);`;
-                document.body.appendChild(fakeAlert);
-            }
-
-            function changeTitleAndFavicon() {
-                const titles = ['ACHÈTE MON LIVRE', '💰💰💰', 'CLIQUE MAINTENANT', '⚠️ ALERTE ⚠️', 'TU VEUX COMPRENDRE', '🔴 URGENT 🔴'];
-                let titleIndex = 0;
-                setInterval(() => {
-                    document.title = titles[titleIndex];
-                    titleIndex = (titleIndex + 1) % titles.length;
-                }, 500);
-
-                const favicon = document.querySelector("link[rel='icon']");
-                setInterval(() => {
-                    favicon.href = Math.random() > 0.5 
-                        ? 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="90">💰</text></svg>'
-                        : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="90">🚨</text></svg>';
-                }, 300);
-            }
-
-            function setupGlitchCursor() {
-                // Hide old cursor
-                document.querySelector('.cursor').style.display = 'none';
-                document.querySelector('.cursor-follower').style.display = 'none';
-                document.body.style.cursor = 'none';
-
-                const glitchCursor = document.createElement('div');
-                glitchCursor.innerHTML = '💰';
-                glitchCursor.style.cssText = `position: fixed; font-size: 30px; pointer-events: none; z-index: 10003; animation: spin 0.5s linear infinite;`;
-                document.body.appendChild(glitchCursor);
-                
-                document.addEventListener('mousemove', (e) => {
-                    glitchCursor.style.left = e.clientX + 'px';
-                    glitchCursor.style.top = e.clientY + 'px';
-                });
-
-                // Add a spin keyframe for the cursor
-                const styleSheet = document.createElement("style");
-                styleSheet.innerText = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
-                document.head.appendChild(styleSheet);
-            }
-
-
+            /**
+             * Déclenche un effet de glitch visuel simple, puis un fondu vers la page 'experience.html'.
+             */
             function triggerGlitch() {
-                const body = document.body;
-                const glitchOverlay = document.getElementById('glitch-overlay');
-                const glitchContent = document.getElementById('glitch-content');
-                const asciiRain = document.getElementById('ascii-rain');
-                const screenCrack = document.getElementById('screen-crack');
+                // 1. Arrête le smooth scroll pour que l'utilisateur ne puisse pas s'échapper.
+                lenis.stop();
 
-                // --- LET THE CHAOS BEGIN ---
-                glitchAudio.play();
-                let volume = 0;
-                const fadeIn = setInterval(() => {
-                    if (volume < 0.3) {
-                        volume += 0.02;
-                        glitchAudio.volume = volume;
-                    } else {
-                        clearInterval(fadeIn);
-                    }
-                }, 100);
+                // 2. Ajoute la classe 'glitching' pour démarrer l'animation de glitch CSS.
+                document.body.classList.add('glitching');
 
-                setupGlitchCursor();
-                screenCrack.style.display = 'block';
-                changeTitleAndFavicon();
-                subliminalMessages();
-                
-                body.classList.add('glitching');
-                createAsciiRain();
-                asciiRain.classList.add('active');
-                corruptText();
-
+                // 3. Après une courte durée, arrête le glitch et commence le fondu.
                 setTimeout(() => {
-                    glitchOverlay.classList.add('active');
-                    let strobeCount = 0;
-                    const strobeInterval = setInterval(() => {
-                        glitchOverlay.style.display = strobeCount % 2 === 0 ? 'block' : 'none';
-                        strobeCount++;
-                        if (strobeCount > 10) {
-                            clearInterval(strobeInterval);
-                            glitchOverlay.style.display = 'block';
-                            
-                            setTimeout(() => {
-                                glitchContent.classList.add('active');
-                                body.classList.remove('glitching');
-                                asciiRain.classList.remove('active');
+                    // Retire la classe de glitch
+                    document.body.classList.remove('glitching');
 
-                                // --- SPAWN THE FINAL MADNESS ---
-                                spawnFakeButtons();
-                                setInterval(() => {
-                                    if (Math.random() > 0.7) fakeSystemAlert();
-                                }, 5000);
-                                
-                                // THE FINAL TRAP: make entire page clickable
-                                setTimeout(() => {
-                                    document.body.addEventListener('click', () => {
-                                        window.open('https://www.amazon.fr/dp/B0D9S5QDF8', '_blank');
-                                    });
-                                }, 3000);
+                    // Ajoute la classe pour le fondu (fade out)
+                    document.body.classList.add('fading-out');
 
-                           }, 500);
-                       }
-                   }, 100);
-               }, 2000);
-           }
+                    // 4. Après la fin de l'animation de fondu, redirige vers la nouvelle page.
+                    setTimeout(() => {
+                        window.location.href = 'experience.html';
+                    }, 1500); // Cette durée DOIT correspondre à la durée de la transition CSS (1.5s).
 
-           function createAsciiRain() {
-               const asciiRain = document.getElementById('ascii-rain');
-               if (asciiRain.children.length > 0) return; // Prevent creating multiple times
-               const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-               for (let i = 0; i < 50; i++) {
-                   const drop = document.createElement('div');
-                   drop.className = 'ascii-drop';
-                   drop.style.left = Math.random() * 100 + '%';
-                   drop.style.animationDelay = Math.random() * 2 + 's';
-                   drop.style.animationDuration = (2 + Math.random() * 3) + 's';
-                   drop.textContent = chars[Math.floor(Math.random() * chars.length)];
-                   asciiRain.appendChild(drop);
-               }
-           }
-
-           function corruptText() {
-               const textElements = document.querySelectorAll('.heading-xl, .heading-lg, .heading-md, .body-text');
-               const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`';
-               textElements.forEach(element => {
-                   const originalText = element.textContent;
-                   let glitchInterval = setInterval(() => {
-                       let corruptedText = '';
-                       for (let i = 0; i < originalText.length; i++) {
-                           if (Math.random() > 0.7) {
-                               corruptedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
-                           } else {
-                               corruptedText += originalText[i];
-                           }
-                       }
-                       element.textContent = corruptedText;
-                   }, 50);
-                   setTimeout(() => {
-                       clearInterval(glitchInterval);
-                       element.textContent = originalText;
-                   }, 2000);
-               });
-           }
-           window.addEventListener('scroll', checkScrollEnd);
+                }, 2500); // Durée de l'effet de glitch (2.5 secondes).
+            }
        });
    </script>
 </body>
