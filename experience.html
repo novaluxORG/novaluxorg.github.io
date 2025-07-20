@@ -282,7 +282,7 @@
             }
         }
         
-
+        /* --- FIN DES NOUVEAUX STYLES POUR L'ÉCRAN DE DÉMARRAGE --- */
 
         /* Narrateur */
         #narrator {
@@ -316,7 +316,8 @@
             word-wrap: break-word;
         }
         
-  
+        /* ... LE RESTE DU CSS EST IDENTIQUE ET RESTE ICI ... */
+        /* [TOUT LE CSS PRÉCÉDENT, DE @keyframes fadeIn à la fin, est conservé sans modification] */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -2121,7 +2122,20 @@
            }, 1000);
        }
 
-  
+       function resetInactivityTimer() {
+           clearTimeout(inactivityTimer);
+           lastInteractionTime = Date.now();
+           
+           inactivityTimer = setTimeout(() => {
+               if (mainAudio && !mainAudio.paused && mainAudio.currentTime > 30) {
+                   showMetaComment("Tu dors ou quoi ?");
+                   document.body.style.animation = 'subtleShake 0.3s';
+                   setTimeout(() => {
+                       document.body.style.animation = '';
+                   }, 300);
+               }
+           }, 15000);
+       }
 
        function showMetaComment(text) {
            const comment = document.createElement('div');
