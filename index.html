@@ -813,7 +813,7 @@
             lenis.on('scroll', checkScrollEnd);
 
             /**
-             * Déclenche un effet de glitch visuel simple, puis un fondu vers la page 'experience.html'.
+             * Déclenche un effet de glitch visuel simple, puis un fondu vers la page 'experiences.html'.
              */
             function triggerGlitch() {
                 // 1. Arrête le smooth scroll pour que l'utilisateur ne puisse pas s'échapper.
@@ -832,7 +832,7 @@
 
                     // 4. Après la fin de l'animation de fondu, redirige vers la nouvelle page.
                     setTimeout(() => {
-                        window.location.href = 'experience.html';
+                        window.location.href = 'experiences.html';
                     }, 1500); // Cette durée DOIT correspondre à la durée de la transition CSS (1.5s).
 
                 }, 2500); // Durée de l'effet de glitch (2.5 secondes).
