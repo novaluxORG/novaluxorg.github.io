@@ -29,9 +29,9 @@
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* --- Transitions Fluides pour le Flip --- */
+        /* --- Transitions Fluides --- */
         body, .section, .marquee, .community-card, .nav-wrapper, .final-cta-section, footer, .hero-section {
-            transition: background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1), color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .text-gold, .stat-number, .morphing-word {
             transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -60,16 +60,12 @@
         .cursor-follower { position: fixed; width: 8px; height: 8px; background-color: var(--black); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9998; transition: transform 0.1s linear, background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1); mix-blend-mode: difference; }
         body.cursor-hover .cursor { width: 64px; height: 64px; background-color: rgba(212, 175, 55, 0.5); border-color: transparent; }
         
-        /* --- NOUVEAU : Styles pour le hover révélateur (Version "Déchirure Numérique") --- */
+        /* --- GLITCH AMÉLIORÉ --- */
         [data-dark-text] {
             position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            /* On s'assure que le texte original reste en place */
-            transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0); /* Force hardware acceleration */
         }
-
-        /* On prépare les deux couches de glitch qui seront superposées */
+        
         [data-dark-text]::before,
         [data-dark-text]::after {
             content: attr(data-dark-text);
@@ -78,120 +74,102 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--off-white); /* Masque le texte original en dessous */
+            background: var(--off-white);
             overflow: hidden;
             opacity: 0;
-            /* Pour des performances optimales */
-            will-change: transform, clip-path;
-        }
-        body.dark-version [data-dark-text]::before,
-        body.dark-version [data-dark-text]::after {
-            background: #0a0a0a;
-        }
-
-        /* Couche 1 : Rouge */
-        [data-dark-text]::before {
-            color: #ff003c;
-            z-index: 1;
-            /* Le mode "screen" éclaircit les superpositions, effet CRT garanti */
-            mix-blend-mode: screen; 
-        }
-
-        /* Couche 2 : Cyan */
-        [data-dark-text]::after {
-            color: #00d0ff;
-            z-index: 2;
-            mix-blend-mode: screen;
-        }
-
-        /* La star du spectacle : l'animation de glitch sur les couches */
-        .revealing::before,
-        .revealing::after {
-            opacity: 1;
-            /* On lance l'animation. La courbe de bezier la rend très nerveuse. */
-            animation: glitch-fx 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-        }
-
-        /* Animation décalée pour un effet plus chaotique */
-        .revealing::after {
-            animation-delay: 0.05s;
-        }
-
-        /* L'animation qui découpe et déplace les tranches de texte */
-        @keyframes glitch-fx {
-            0% { transform: translate(0); clip-path: inset(100% 0 0 0); }
-            5% { transform: translate(2px, -4px); clip-path: inset(65% 0 15% 0); }
-            10% { transform: translate(-3px, 3px); clip-path: inset(30% 0 60% 0); }
-            15% { transform: translate(5px, -6px); clip-path: inset(80% 0 5% 0); }
-            20% { transform: translate(-2px, 1px); clip-path: inset(55% 0 30% 0); }
-            25% { transform: translate(3px, -3px); clip-path: inset(20% 0 75% 0); }
-            30% { transform: translate(-4px, 5px); clip-path: inset(95% 0 2% 0); }
-            35% { transform: translate(6px, -1px); clip-path: inset(40% 0 45% 0); }
-            40% { transform: translate(-1px, 4px); clip-path: inset(70% 0 10% 0); }
-            45% { transform: translate(4px, -2px); clip-path: inset(10% 0 88% 0); }
-            50% { transform: translate(-3px, 2px); clip-path: inset(50% 0 40% 0); }
-            55% { transform: translate(5px, -5px); clip-path: inset(85% 0 8% 0); }
-            60% { transform: translate(-1px, 3px); clip-path: inset(35% 0 55% 0); }
-            65% { transform: translate(2px, -4px); clip-path: inset(60% 0 25% 0); }
-            70% { transform: translate(-4px, 1px); clip-path: inset(90% 0 4% 0); }
-            75% { transform: translate(3px, -2px); clip-path: inset(15% 0 80% 0); }
-            80% { transform: translate(-2px, 5px); clip-path: inset(45% 0 50% 0); }
-            85% { transform: translate(5px, -1px); clip-path: inset(75% 0 18% 0); }
-            90% { transform: translate(-1px, 3px); clip-path: inset(25% 0 70% 0); }
-            95% { transform: translate(4px, -4px); clip-path: inset(5% 0 92% 0); }
-            100% { transform: translate(0); clip-path: inset(100% 0 0 0); }
-        }
-
-
-        /* État "infecté" : un glitch constant et plus lent */
-        [data-dark-text].infected::before,
-        [data-dark-text].infected::after {
-            opacity: 1;
-            animation: glitch-fx 3s infinite steps(1, end);
-        }
-        [data-dark-text].infected::after {
-            animation-delay: 0.2s;
-        }
-
-
-        /* État "permanent" : on calme le jeu mais on garde une instabilité */
-        [data-dark-text].permanent-dark {
-            color: #9e8a3a !important;
-            animation: glitchPermanent 12s infinite;
-        }
-
-        @keyframes glitchPermanent {
-            0%, 97% { transform: translateX(0); filter: brightness(1); }
-            98% { transform: translateX(-1px) skew(-1deg); filter: brightness(1.2); }
-            99% { transform: translateX(1px) skew(1deg); filter: brightness(0.8); }
-            100% { transform: translateX(0); filter: brightness(1); }
-        }
-
-        /* Effet de distorsion sur le body quand il glitch */
-        body.glitching { animation: bodyGlitch 0.3s linear; }
-        @keyframes bodyGlitch { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
-
-        /* Effet de scanlines pour l'ambiance glitch */
-        body.dark-version::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 255, 255, 0.03) 2px,
-                rgba(255, 255, 255, 0.03) 4px
-            );
             pointer-events: none;
-            z-index: 1; /* S'assure qu'il est au-dessus du fond mais sous le contenu */
-            animation: scanlines 8s linear infinite;
         }
-        @keyframes scanlines { from { transform: translateY(0); } to { transform: translateY(10px); } }
         
+        /* Change background for dark sections */
+        .appel-section [data-dark-text]::before,
+        .appel-section [data-dark-text]::after,
+        .testimonials-section [data-dark-text]::before,
+        .testimonials-section [data-dark-text]::after,
+        .final-cta-section [data-dark-text]::before,
+        .final-cta-section [data-dark-text]::after,
+        footer [data-dark-text]::before,
+        footer [data-dark-text]::after {
+             background: var(--black);
+        }
+        
+        [data-dark-text].revealing::before {
+            color: rgba(255, 0, 192, 0.8);
+            animation: glitch-anim 150ms steps(2, end) infinite;
+            mix-blend-mode: difference;
+            opacity: 1;
+        }
+
+        [data-dark-text].revealing::after {
+            color: rgba(0, 255, 255, 0.8);
+            animation: glitch-anim-2 100ms steps(2, end) infinite reverse;
+            mix-blend-mode: difference;
+            opacity: 1;
+        }
+        
+        @keyframes glitch-anim {
+            0% { transform: translate(0); clip-path: polygon(0 15%, 100% 15%, 100% 20%, 0 20%); }
+            100% { transform: translate(1px, -1px); clip-path: polygon(0 80%, 100% 80%, 100% 85%, 0 85%); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { transform: translate(0); clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%); }
+            100% { transform: translate(-1px, 1px); clip-path: polygon(0 60%, 100% 60%, 100% 65%, 0 65%); }
+        }
+
+        @keyframes glitch-fx {
+            0% { transform: translate(0); opacity: 1; }
+            10% { transform: translate(1px, -1px); opacity: 0.9; }
+            20% { transform: translate(-1px, 1px); opacity: 0.8; }
+            30% { transform: translate(2px, -2px) scaleX(0.99); opacity: 0.9; }
+            40% { transform: translate(-2px, 0px); opacity: 1; }
+            50% { transform: translate(1px, 1px) scaleY(0.99); opacity: 0.85; }
+            60% { transform: translate(-1px, -1px); opacity: 0.95; }
+            70% { transform: translate(0px, 2px); opacity: 1; }
+            80% { transform: translate(0px, -1px); opacity: 0.9; }
+            90% { transform: translate(1px, 0px); opacity: 0.95; }
+            100% { transform: translate(0); opacity: 1; }
+        }
+
+        .revealing {
+            animation: glitch-fx 1s ease-in-out;
+        }
+
+        /* --- NOUVEAU : GLITCH GLOBAL & REDIRECTION --- */
+        #global-glitch-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: 
+                linear-gradient(rgba(255,0,192, 0.2) 50%, transparent 50%),
+                linear-gradient(90deg, rgba(0,255,255, 0.2) 50%, transparent 50%);
+            background-size: 100% 4px, 4px 100%;
+            mix-blend-mode: color-dodge;
+            z-index: 10001;
+            pointer-events: none;
+            opacity: 0;
+            display: none;
+        }
+        
+        @keyframes screen-shake {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-3px, -2px); }
+            20% { transform: translate(2px, 3px); }
+            30% { transform: translate(-2px, -1px); }
+            40% { transform: translate(1px, 2px); }
+            50% { transform: translate(3px, -3px) skew(-2deg, -1deg); }
+            60% { transform: translate(-1px, 2px); }
+            70% { transform: translate(2px, 1px) skew(1deg, 2deg); }
+            80% { transform: translate(-2px, -2px); }
+            90% { transform: translate(1px, 3px); }
+        }
+
+        body.is-glitching {
+            animation: screen-shake 0.4s infinite linear;
+        }
+        body.is-glitching #global-glitch-overlay {
+            display: block;
+            opacity: 1;
+        }
+
         /* --- LAYOUT --- */
         main, footer, nav { position: relative; z-index: 2; }
         .heading-xl { font-size: clamp(3.5rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.04em; }
@@ -298,38 +276,6 @@
         .reveal-item { opacity: 0; transform: translateY(30px); transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         .reveal-item.is-inview { opacity: 1; transform: translateY(0); }
         
-        /* --- Classe pour le fade out avant redirection --- */
-        body.fading-out {
-            transition: opacity 1.5s ease-out;
-            opacity: 0;
-        }
-
-        /* --- DARK FLIP VERSION : Le mode manipulateur --- */
-        body.dark-version {
-            --gold: #9e8a3a; /* Or terni */
-            --off-white: #1a1a1a;
-            --black: #cccccc; /* Texte principal devient gris clair */
-            --gray: #555;
-            background: #0a0a0a;
-        }
-        body.dark-version .cursor-follower { background-color: #fff; }
-        body.dark-version .hero-section { background-color: #0a0a0a; }
-        body.dark-version .hero-video-container { filter: grayscale(50%) contrast(1.1) brightness(0.7); }
-        body.dark-version .body-text { font-style: italic; letter-spacing: -0.01em; }
-        body.dark-version .heading-lg, body.dark-version .heading-md { letter-spacing: -0.02em; }
-        body.dark-version .scroll-prompt {
-            opacity: 0 !important;
-            pointer-events: none;
-        }
-        body.dark-version .marquee { background: #111; color: var(--gray); border-color: #222; }
-        body.dark-version #appel img { filter: saturate(0.6) brightness(0.8); }
-        body.dark-version .community-card { background: #111; border-color: #222; }
-        body.dark-version .community-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        body.dark-version .nav-wrapper { background: rgba(10, 10, 10, 0.8); border-color: #333; }
-        body.dark-version .nav-link, body.dark-version .nav-cta { color: #aaa; }
-        body.dark-version .nav-cta { background: #222; color: #888; }
-        body.dark-version footer { border-top-color: #222; }
-
         /* --- RESPONSIVE --- */
         @media (max-width: 900px) { .appel-grid { grid-template-columns: 1fr; gap: 60px; } .appel-text { order: 2; } .hero-content .morphing-word { width: 320px; } .hero-brand { left: 20px; top: 20px; } .hero-brand img { height: 30px; } .hero-brand span { font-size: 1rem;} }
         @media (max-width: 768px) { .nav-wrapper { display: none; } .hamburger { display: flex; } .hero-content .morphing-word { width: 240px; } .community-grid, .stats-grid { grid-template-columns: 1fr; } .section { padding: 80px 0; } .footer-links { flex-direction: column; gap: 20px; } }
@@ -338,6 +284,7 @@
 </head>
 <body>
     
+    <div id="global-glitch-overlay"></div>
     <canvas id="particle-trail-canvas"></canvas>
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
@@ -383,16 +330,16 @@
             </a>
         </section>
 
-        <section class="marquee">
+        <div class="marquee">
             <div class="marquee-content">
                 <span data-light-text="ÉVEIL" data-dark-text="SOUMISSION">ÉVEIL</span> • <span data-light-text="BEAUTÉ" data-dark-text="CONFORMITÉ">BEAUTÉ</span> • <span data-light-text="CONNEXION" data-dark-text="CONTRÔLE">CONNEXION</span> • <span data-light-text="LUMIÈRE" data-dark-text="ILLUSION">LUMIÈRE</span> •
                 <span data-light-text="ÉVEIL" data-dark-text="SOUMISSION">ÉVEIL</span> • <span data-light-text="BEAUTÉ" data-dark-text="CONFORMITÉ">BEAUTÉ</span> • <span data-light-text="CONNEXION" data-dark-text="CONTRÔLE">CONNEXION</span> • <span data-light-text="LUMIÈRE" data-dark-text="ILLUSION">LUMIÈRE</span> •
                 <span data-light-text="ÉVEIL" data-dark-text="SOUMISSION">ÉVEIL</span> • <span data-light-text="BEAUTÉ" data-dark-text="CONFORMITÉ">BEAUTÉ</span> • <span data-light-text="CONNEXION" data-dark-text="CONTRÔLE">CONNEXION</span> • <span data-light-text="LUMIÈRE" data-dark-text="ILLUSION">LUMIÈRE</span> •
                 <span data-light-text="ÉVEIL" data-dark-text="SOUMISSION">ÉVEIL</span> • <span data-light-text="BEAUTÉ" data-dark-text="CONFORMITÉ">BEAUTÉ</span> • <span data-light-text="CONNEXION" data-dark-text="CONTRÔLE">CONNEXION</span> • <span data-light-text="LUMIÈRE" data-dark-text="ILLUSION">LUMIÈRE</span> •
             </div>
-        </section>
+        </div>
         
-        <section id="stats" class="stats-section">
+        <section id="stats" class="stats-section section">
             <div class="container">
                 <div class="stats-grid">
                     <div class="stat-item reveal-item">
@@ -536,8 +483,40 @@
 
     <!-- Main Script -->
     <script>
-        // --- Chargement optimisé de la vidéo hero ---
         document.addEventListener('DOMContentLoaded', () => {
+            // --- LENIS SMOOTH SCROLL ---
+            const lenis = new Lenis();
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+            
+            // --- NOUVEAU : LOGIQUE DE REDIRECTION EN FIN DE SCROLL ---
+            let isRedirecting = false;
+            lenis.on('scroll', (e) => {
+                // On vérifie si on est tout en bas (progress est entre 0 et 1)
+                // et si la redirection n'est pas déjà en cours.
+                if (e.progress > 0.999 && !isRedirecting) {
+                    isRedirecting = true; // Empêche de déclencher plusieurs fois
+
+                    // 1. Appliquer la classe de glitch au body
+                    document.body.classList.add('is-glitching');
+                    
+                    // 2. Forcer tous les textes en mode "dark" pour l'effet
+                    document.querySelectorAll('[data-dark-text]').forEach(el => {
+                       if (el.dataset.darkText) {
+                           el.innerHTML = el.dataset.darkText;
+                           el.classList.add('revealing');
+                       }
+                    });
+
+                    // 3. Après un délai pour l'effet visuel, on redirige
+                    setTimeout(() => {
+                        window.location.href = '/experiences.html';
+                    }, 2000); // 2 secondes pour l'effet
+                }
+            });
+
+
+            // --- Chargement optimisé de la vidéo hero ---
             setTimeout(() => {
                 const heroVideoContainer = document.getElementById('hero-video-container');
                 if (heroVideoContainer) {
@@ -551,31 +530,24 @@
                     `;
                 }
             }, 500);
-        });
 
-        // --- YOUTUBE API FOR AUTOPLAY WITH SOUND ---
-        let testimonialPlayer;
-        function onYouTubeIframeAPIReady() {
-            testimonialPlayer = new YT.Player('testimonial-player', {
-                height: '390', width: '640', videoId: 'XBuMk7NIIj4',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'rel': 0, 'showinfo': 0, 'loop': 1, 'mute': 1, 'playlist': 'XBuMk7NIIj4' },
-                events: { 'onReady': onPlayerReady }
-            });
-        }
-        function onPlayerReady(event) {
-            event.target.playVideo();
-            const unmuteOverlay = document.getElementById('unmute-overlay');
-            unmuteOverlay.addEventListener('click', () => {
-                event.target.unMute();
-                unmuteOverlay.classList.add('hidden');
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- LENIS SMOOTH SCROLL ---
-            const lenis = new Lenis();
-            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-            requestAnimationFrame(raf);
+            // --- YOUTUBE API FOR AUTOPLAY WITH SOUND ---
+            let testimonialPlayer;
+            window.onYouTubeIframeAPIReady = function() {
+                testimonialPlayer = new YT.Player('testimonial-player', {
+                    height: '390', width: '640', videoId: 'XBuMk7NIIj4',
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'rel': 0, 'showinfo': 0, 'loop': 1, 'mute': 1, 'playlist': 'XBuMk7NIIj4' },
+                    events: { 'onReady': onPlayerReady }
+                });
+            }
+            function onPlayerReady(event) {
+                event.target.playVideo();
+                const unmuteOverlay = document.getElementById('unmute-overlay');
+                unmuteOverlay.addEventListener('click', () => {
+                    event.target.unMute();
+                    unmuteOverlay.classList.add('hidden');
+                });
+            }
 
             // --- MOBILE MENU FUNCTIONALITY ---
             const hamburger = document.querySelector('.hamburger');
@@ -592,12 +564,12 @@
             });
 
             // --- SCROLL SPY NAVIGATION ---
-            const sections = document.querySelectorAll('section[id]');
+            const scrollSections = document.querySelectorAll('section[id]');
             const navLinks = document.querySelectorAll('.nav-link[data-section], .mobile-menu-link[data-section]');
             function updateActiveNavLink() {
                 let current = '';
                 const scrollY = window.pageYOffset;
-                sections.forEach(section => {
+                scrollSections.forEach(section => {
                     const sectionTop = section.offsetTop - 100;
                     if (scrollY >= sectionTop && scrollY < sectionTop + section.offsetHeight) {
                         current = section.getAttribute('id');
@@ -665,14 +637,13 @@
 
             // --- MORPHING TEXT ANIMATION ---
             const lightMorphText = ['Éveillez', 'Cultivez', 'Révélez']; 
-            const darkMorphText = ['Soumettez', 'Obéissez', 'Payez'];
             let morphIndex = 0;
             const morphingWord = document.querySelector('.morphing-word');
-            let morphInterval = setInterval(animateMorph, 3500);
+            const morphInterval = setInterval(animateMorph, 3500); 
             
             function animateMorph() {
                 if (!morphingWord) return;
-                const currentTextArray = document.body.classList.contains('dark-version') ? darkMorphText : lightMorphText;
+                const currentTextArray = lightMorphText; // Toujours utiliser le texte "light"
                 morphingWord.style.opacity = 0;
                 morphingWord.style.transform = 'translateY(-20px)';
                 setTimeout(() => {
@@ -687,7 +658,7 @@
             const marqueeContent = document.querySelector('.marquee-content');
             if (marqueeContent) { marqueeContent.innerHTML += marqueeContent.innerHTML; }
 
-            // --- CONSTELLATION & PARTICLE CANVASES (with dark mode adaptation) ---
+            // --- CONSTELLATION & PARTICLE CANVASES ---
             const constellationCanvas = document.getElementById('constellation-canvas');
             if (constellationCanvas) {
                 const constellationSection = document.getElementById('communaute');
@@ -696,10 +667,10 @@
                 constellationSection.addEventListener('mousemove', (event) => { const rect = constellationCanvas.getBoundingClientRect(); mouse.x = event.clientX - rect.left; mouse.y = event.clientY - rect.top; });
                 constellationSection.addEventListener('mouseenter', initConstellation);
                 constellationSection.addEventListener('mouseleave', () => { mouse.x = undefined; mouse.y = undefined; if(animationFrameId) cancelAnimationFrame(animationFrameId); animationFrameId = null; });
-                class Particle { constructor(x,y,dX,dY,s){this.x=x;this.y=y;this.directionX=dX;this.directionY=dY;this.size=s;} draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); const color = document.body.classList.contains('dark-version')?'rgba(158, 138, 58, 0.4)':'rgba(212, 175, 55, 0.5)'; ctx.fillStyle=color; ctx.fill();} update(){if(this.x>constellationCanvas.width||this.x<0)this.directionX=-this.directionX;if(this.y>constellationCanvas.height||this.y<0)this.directionY=-this.directionY;this.x+=this.directionX*0.2;this.y+=this.directionY*0.2;this.draw();}}
+                class Particle { constructor(x,y,dX,dY,s){this.x=x;this.y=y;this.directionX=dX;this.directionY=dY;this.size=s;} draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); const color = 'rgba(212, 175, 55, 0.5)'; ctx.fillStyle=color; ctx.fill();} update(){if(this.x>constellationCanvas.width||this.x<0)this.directionX=-this.directionX;if(this.y>constellationCanvas.height||this.y<0)this.directionY=-this.directionY;this.x+=this.directionX*0.2;this.y+=this.directionY*0.2;this.draw();}}
                 function initConstellation(){if(animationFrameId)return;constellationCanvas.width=constellationSection.offsetWidth;constellationCanvas.height=constellationSection.offsetHeight;particlesArray=[];let num=(constellationCanvas.height*constellationCanvas.width)/12000;for(let i=0;i<num;i++){particlesArray.push(new Particle(Math.random()*constellationCanvas.width,Math.random()*constellationCanvas.height,(Math.random()*.5)-.25,(Math.random()*.5)-.25,(Math.random()*2)+1));}animateConstellation();}
                 function animateConstellation(){ctx.clearRect(0,0,constellationCanvas.width,constellationCanvas.height);for(let i=0;i<particlesArray.length;i++){particlesArray[i].update();}connect();animationFrameId=requestAnimationFrame(animateConstellation);}
-                function connect(){const isDark=document.body.classList.contains('dark-version');for(let a=0;a<particlesArray.length;a++){for(let b=a;b<particlesArray.length;b++){let distance=((particlesArray[a].x-particlesArray[b].x)**2)+((particlesArray[a].y-particlesArray[b].y)**2);if(distance<(constellationCanvas.width/7)**2){let opacityValue=1-(distance/20000);ctx.strokeStyle=isDark?`rgba(85, 85, 85, ${opacityValue*0.4})`:`rgba(160, 160, 160, ${opacityValue*0.2})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(particlesArray[a].x,particlesArray[a].y);ctx.lineTo(particlesArray[b].x,particlesArray[b].y);ctx.stroke();}} if(mouse.x!==undefined){let distanceToMouse=((particlesArray[a].x-mouse.x)**2)+((particlesArray[a].y-mouse.y)**2);if(distanceToMouse<(constellationCanvas.width/7)**2){let opacityValue=1-(distanceToMouse/20000);ctx.strokeStyle=`rgba(212, 175, 55, ${opacityValue*0.4})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mouse.x,mouse.y);ctx.lineTo(particlesArray[a].x,particlesArray[a].y);ctx.stroke();}}}}
+                function connect(){for(let a=0;a<particlesArray.length;a++){for(let b=a;b<particlesArray.length;b++){let distance=((particlesArray[a].x-particlesArray[b].x)**2)+((particlesArray[a].y-particlesArray[b].y)**2);if(distance<(constellationCanvas.width/7)**2){let opacityValue=1-(distance/20000);ctx.strokeStyle=`rgba(160, 160, 160, ${opacityValue*0.2})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(particlesArray[a].x,particlesArray[a].y);ctx.lineTo(particlesArray[b].x,particlesArray[b].y);ctx.stroke();}} if(mouse.x!==undefined){let distanceToMouse=((particlesArray[a].x-mouse.x)**2)+((particlesArray[a].y-mouse.y)**2);if(distanceToMouse<(constellationCanvas.width/7)**2){let opacityValue=1-(distanceToMouse/20000);ctx.strokeStyle=`rgba(212, 175, 55, ${opacityValue*0.4})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(mouse.x,mouse.y);ctx.lineTo(particlesArray[a].x,particlesArray[a].y);ctx.stroke();}}}}
                 window.addEventListener('resize', () => { clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(() => { if(animationFrameId) cancelAnimationFrame(animationFrameId); animationFrameId = null; if (document.querySelector('#communaute:hover')) { initConstellation(); } }, 250); });
             }
             const trailCanvas = document.getElementById('particle-trail-canvas');
@@ -707,133 +678,48 @@
                 const ctx = trailCanvas.getContext('2d'); let particles = [];
                 function setCanvasSize(){trailCanvas.width=window.innerWidth;trailCanvas.height=window.innerHeight;} setCanvasSize(); window.addEventListener('resize', setCanvasSize);
                 document.addEventListener('mousemove', e => { for(let i=0;i<2;i++){particles.push(new TrailParticle(e.clientX,e.clientY));} });
-                class TrailParticle{constructor(x,y){this.x=x;this.y=y;this.size=Math.random()*2+1;this.speedX=Math.random()*2-1;this.speedY=Math.random()*2-1;this.life=1;} update(){this.x+=this.speedX;this.y+=this.speedY;this.life-=0.04;if(this.size>0.1)this.size-=0.03;} draw(){const color=document.body.classList.contains('dark-version')?'rgba(158, 138, 58, 0.5)':'rgba(212, 175, 55, 0.7)';ctx.fillStyle=color;ctx.globalAlpha=this.life;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}}
+                class TrailParticle{constructor(x,y){this.x=x;this.y=y;this.size=Math.random()*2+1;this.speedX=Math.random()*2-1;this.speedY=Math.random()*2-1;this.life=1;} update(){this.x+=this.speedX;this.y+=this.speedY;this.life-=0.04;if(this.size>0.1)this.size-=0.03;} draw(){const color='rgba(212, 175, 55, 0.7)';ctx.fillStyle=color;ctx.globalAlpha=this.life;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}}
                 function animateTrail(){ctx.clearRect(0,0,trailCanvas.width,trailCanvas.height);for(let i=particles.length-1;i>=0;i--){particles[i].update();particles[i].draw();if(particles[i].life<=0||particles[i].size<=0.1){particles.splice(i,1);}}requestAnimationFrame(animateTrail);}
                 animateTrail();
             }
 
-            // --- NOUVELLE LOGIQUE : HOVER RÉVÉLATEUR ---
-            let infectedElements = new Set();
-            let permanentDarkElements = new Set();
-            let isFullyCorrupted = false;
-            
-            const darkTextElements = document.querySelectorAll('[data-dark-text]');
-            
-            darkTextElements.forEach(element => {
-                let hoverCount = 0;
-                let hoverTimer;
-
-                // On stocke le texte light une bonne fois pour toutes
-                element.dataset.lightText = element.innerHTML;
-                
-                element.addEventListener('mouseenter', function() {
-                    if (isFullyCorrupted || permanentDarkElements.has(this)) return;
-
-                    // Change le texte de base en version "dark"
-                    this.innerHTML = this.dataset.darkText;
-                    // Ajoute la classe qui déclenche l'animation de glitch CSS
-                    this.classList.add('revealing');
-                    
-                    // Effet de contagion
-                    setTimeout(() => infectNearbyElements(this), 300);
-                    
-                    // On retire la classe d'animation après qu'elle soit terminée
-                    setTimeout(() => this.classList.remove('revealing'), 400);
-
-                    clearTimeout(hoverTimer);
-                    hoverTimer = setTimeout(() => {
-                        hoverCount++;
-                        
-                        if (hoverCount >= 3 && !infectedElements.has(this)) {
-                            infectedElements.add(this);
-                            this.classList.add('infected');
-                        }
-                        
-                        if (hoverCount >= 5 && !permanentDarkElements.has(this)) {
-                            permanentDarkElements.add(this);
-                            this.classList.remove('infected'); // On nettoie l'ancienne classe
-                            this.classList.add('permanent-dark');
-                            this.innerHTML = this.dataset.darkText;
-                        }
-                        
-                        if (permanentDarkElements.size > 10) {
-                            triggerFullCorruption();
-                        }
-                    }, 500);
-                });
-
-                element.addEventListener('mouseleave', function() {
-                    if (isFullyCorrupted || permanentDarkElements.has(this)) return;
-
-                    // Remet le texte original seulement si l'élément n'est pas "infecté"
-                    if (!infectedElements.has(this)) {
-                         this.innerHTML = this.dataset.lightText;
-                    }
-                });
-            });
-            
-            // Fonction pour infecter les éléments proches
-            function infectNearbyElements(sourceElement) {
-                const rect = sourceElement.getBoundingClientRect();
-                const nearbyThreshold = 200; // pixels
-                
-                darkTextElements.forEach(element => {
-                    if (element === sourceElement || permanentDarkElements.has(element) || infectedElements.has(element)) return;
-                    
-                    const elementRect = element.getBoundingClientRect();
-                    const distance = Math.sqrt(
-                        Math.pow(rect.left - elementRect.left, 2) + 
-                        Math.pow(rect.top - elementRect.top, 2)
-                    );
-                    
-                    if (distance < nearbyThreshold && Math.random() > 0.7) {
-                        element.innerHTML = element.dataset.darkText;
-                        element.classList.add('revealing');
-                        setTimeout(() => {
-                           element.classList.remove('revealing');
-                           element.innerHTML = element.dataset.lightText;
-                        }, 1000);
-                    }
-                });
-            }
-            
-            // Bascule complète en mode dark
-            function triggerFullCorruption() {
-                if (isFullyCorrupted) return;
-                isFullyCorrupted = true;
-                
-                // Animation de corruption totale
-                document.body.style.transition = 'all 2s ease';
-                document.body.classList.add('dark-version');
-                
-                // Change tous les textes en version dark
-                darkTextElements.forEach(element => {
-                    element.innerHTML = element.dataset.darkText;
-                    element.classList.remove('infected');
-                    element.classList.add('permanent-dark');
-                });
-                
-                // Relance l'animation du mot morphing
-                clearInterval(morphInterval);
-                morphIndex = -1;
-                animateMorph();
-                morphInterval = setInterval(animateMorph, 3500);
-            }
-            
-            // Redirection vers experiences.html
-            function triggerRedirect() {
-                lenis.stop();
-                document.body.classList.add('fading-out');
-                setTimeout(() => {
-                    window.location.href = 'experiences.html';
-                }, 1500);
-            }
-
-            // Écoute le scroll pour la redirection
-            lenis.on('scroll', ({ scroll, limit }) => {
-                if (scroll >= limit - 5) {
-                    triggerRedirect();
+            // --- LOGIQUE HOVER TEXTE SUR SECTION ---
+            const interactiveContainers = new Set();
+            document.querySelectorAll('[data-dark-text]').forEach(el => {
+                const container = el.closest('section, footer, nav, .marquee-content');
+                if (container) {
+                    interactiveContainers.add(container);
                 }
+            });
+
+            interactiveContainers.forEach(container => {
+                const targetElements = container.querySelectorAll('[data-dark-text]');
+                const revealDarkText = () => {
+                    targetElements.forEach(element => {
+                        if (element.dataset.darkText) {
+                            element.innerHTML = element.dataset.darkText;
+                            element.classList.add('revealing');
+                        }
+                    });
+                    setTimeout(() => {
+                        targetElements.forEach(element => element.classList.remove('revealing'));
+                    }, 1000);
+                };
+                
+                const restoreLightText = () => {
+                    targetElements.forEach(element => {
+                        if (element.dataset.lightText) {
+                            element.innerHTML = element.dataset.lightText;
+                        }
+                        element.classList.remove('revealing');
+                    });
+                };
+
+                targetElements.forEach(trigger => {
+                    trigger.addEventListener('mouseenter', revealDarkText);
+                });
+
+                container.addEventListener('mouseleave', restoreLightText);
             });
         });
    </script>
