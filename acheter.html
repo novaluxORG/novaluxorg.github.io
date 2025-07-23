@@ -1,0 +1,1168 @@
+
+33.90 Ko •1 164 lignes
+•
+Le formatage peut être différent de la source
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Lux - Le livre phénomène qui bouleverse la France | French Faker</title>
+  <meta name="description" content="Découvrez Nova Lux, le roman évènement salué par la critique. Plus de 500 000 lecteurs conquis. Prix Goncourt 2024.">
+  <meta property="og:title" content="Nova Lux - French Faker">
+  <meta property="og:description" content="Le roman qui décrypte notre époque. Élu meilleur livre de l'année.">
+  <meta property="og:image" content="images/logo.png">
+  
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="apple-touch-icon" href="images/logo.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --gold-light: #F4E4C1;
+      --off-white: #F3F3F3;
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --gray: #888888;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--off-white);
+      color: var(--black);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* Cursor styles from index.html */
+    .cursor, .cursor-follower { will-change: transform; pointer-events: none; }
+    .cursor { position: fixed; width: 32px; height: 32px; border: 1px solid var(--gray); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9999; transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease; }
+    .cursor-follower { position: fixed; width: 8px; height: 8px; background-color: var(--black); border-radius: 50%; top: 0; left: 0; transform: translate(-50%, -50%); z-index: 9998; transition: transform 0.1s linear, background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1); mix-blend-mode: difference; }
+    body.cursor-hover .cursor { width: 64px; height: 64px; background-color: rgba(212, 175, 55, 0.5); border-color: transparent; }
+
+    /* Typography from index.html */
+    .heading-xl { font-size: clamp(3.5rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.04em; }
+    .heading-lg { font-size: clamp(3rem, 8vw, 6rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+    .heading-md { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
+    .body-text { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; color: var(--gray); max-width: 60ch; }
+    
+    /* Section styles */
+    .section { padding: 140px 0; }
+    .container { width: 90%; max-width: 1440px; margin: 0 auto; position: relative; z-index: 2; }
+    .text-gold { color: var(--gold); }
+    .text-center { text-align: center; }
+
+    /* Timer Container */
+    .timer-container {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--black);
+      color: var(--white);
+      padding: 20px 40px;
+      border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+      animation-delay: 2s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .timer-text {
+      font-size: 14px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .timer-countdown {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'VT323', monospace;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .reveal-button {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+    .reveal-button.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .reveal-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    /* Glitch effects adapted */
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+    }
+
+    @keyframes glitch-skew {
+      0%, 100% { transform: skew(0deg); }
+      20% { transform: skew(-2deg); }
+      40% { transform: skew(2deg); }
+      60% { transform: skew(-1deg); }
+      80% { transform: skew(1deg); }
+    }
+
+    @keyframes glitch-color {
+      0%, 100% { 
+        text-shadow: 2px 2px 0 #ff0000, -2px -2px 0 #00ff00;
+        opacity: 1;
+      }
+      50% { 
+        text-shadow: -2px 2px 0 #00ff00, 2px -2px 0 #ff0000;
+        opacity: 0.8;
+      }
+    }
+
+    @keyframes reveal-fake {
+      0% { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+      50% { transform: scale(1.1) rotate(5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .fake-stamp {
+      position: absolute;
+      color: #ff0000;
+      font-family: 'VT323', monospace;
+      font-size: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      transform: rotate(-15deg);
+      opacity: 0;
+      animation: reveal-fake 0.5s forwards;
+      z-index: 10;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2px 8px;
+      border: 2px solid #ff0000;
+    }
+
+    .award-sticker .fake-stamp {
+      font-size: 28px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-25deg);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 20;
+    }
+
+    .glitch-text {
+      animation: glitch 0.3s infinite;
+      display: inline-block;
+    }
+
+    .corrupted {
+      animation: glitch-color 0.5s infinite;
+      font-family: 'VT323', monospace !important;
+    }
+
+    /* Navigation - Nova Lux style */
+    nav {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+    }
+
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--black);
+      font-weight: 500;
+      font-size: 16px;
+      padding: 8px 12px;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link:hover { color: var(--gold); }
+    .nav-link.active { color: var(--gold); }
+    
+    .nav-cta {
+      background: var(--black);
+      color: var(--white);
+      border-radius: 30px;
+      padding: 10px 24px;
+    }
+    
+    .nav-cta:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    /* Trust Banner - Nova Lux style */
+    .trust-banner {
+      background: var(--gold);
+      color: var(--black);
+      padding: 20px;
+      text-align: center;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+      margin-top: 80px;
+    }
+
+    .trust-banner span {
+      margin: 0 20px;
+      display: inline-block;
+    }
+
+    /* Hero Section - Nova Lux style */
+    .hero {
+      padding: 120px 0;
+      background: var(--off-white);
+      position: relative;
+    }
+
+    .hero-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      padding: 0 5%;
+    }
+
+    /* Book presentation - Nova Lux style */
+    .book-presentation {
+      position: relative;
+    }
+
+    .book-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .award-sticker {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--black);
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+      z-index: 10;
+      transform: rotate(15deg);
+      position: relative;
+      overflow: visible;
+    }
+
+    .book-3d {
+      width: 380px;
+      height: 560px;
+      background: var(--black);
+      border-radius: 4px 20px 20px 4px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transform: perspective(1000px) rotateY(-5deg);
+      transition: transform 0.4s ease;
+    }
+
+    .book-3d:hover {
+      transform: perspective(1000px) rotateY(0deg);
+    }
+
+    .book-logo {
+      width: 140px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+      filter: brightness(1.1);
+    }
+
+    .book-title {
+      font-size: 56px;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .book-author {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 14px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Content side */
+    .hero-content {
+      padding-left: 40px;
+    }
+
+    .awards-list {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .award-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--white);
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--black);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      color: var(--black);
+      letter-spacing: -0.03em;
+    }
+
+    .hero-subtitle {
+      font-size: 24px;
+      color: var(--gray);
+      margin-bottom: 32px;
+      font-weight: 300;
+    }
+
+    .hero-description {
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--gray);
+      margin-bottom: 48px;
+      max-width: 60ch;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 48px;
+      padding: 32px;
+      background: var(--white);
+      border-radius: 20px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    .cta-group {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--black);
+      padding: 20px 48px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+    }
+
+    .price-info {
+      font-size: 24px;
+      font-weight: 300;
+    }
+
+    .price-current {
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .price-old {
+      color: var(--gray);
+      text-decoration: line-through;
+      margin-left: 8px;
+    }
+
+    /* Press section - Nova Lux style */
+    .press-section {
+      padding: 140px 0;
+      background: var(--white);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-title {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--black);
+      letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+      font-size: 20px;
+      color: var(--gray);
+    }
+
+    .press-grid {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      padding: 0 5%;
+    }
+
+    .press-card {
+      background: var(--off-white);
+      padding: 48px;
+      border-radius: 20px;
+      transition: all 0.3s;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .press-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .press-logo {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .press-logo.figaro { color: #00519F; }
+    .press-logo.monde { color: #000000; }
+    .press-logo.obs { color: #E4002B; }
+    .press-logo.point { color: #FF0000; }
+
+    .press-quote {
+      font-size: 20px;
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 24px;
+      color: var(--black);
+    }
+
+    .press-author {
+      font-size: 14px;
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    .press-date {
+      font-size: 12px;
+      color: var(--gray);
+      opacity: 0.7;
+    }
+
+    /* Testimonials - Nova Lux style */
+    .testimonials-section {
+      padding: 140px 0;
+      background: var(--off-white);
+    }
+
+    .testimonials-grid {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      padding: 0 5%;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 20px;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .testimonial-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .testimonial-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--black);
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    .testimonial-rating {
+      color: var(--gold);
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    /* Reveal animations from index.html */
+    .reveal-text { display: block; overflow: hidden; }
+    .reveal-text > span { display: block; transform: translateY(110%); transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-text.is-inview > span { transform: translateY(0); }
+    .reveal-item { opacity: 0; transform: translateY(30px); transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-item.is-inview { opacity: 1; transform: translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        gap: 64px;
+        text-align: center;
+      }
+
+      .hero-content {
+        padding-left: 0;
+      }
+
+      .book-presentation {
+        display: flex;
+        justify-content: center;
+      }
+
+      .press-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-wrapper {
+        display: none;
+      }
+      
+      .book-3d {
+        width: 280px;
+        height: 400px;
+      }
+
+      .book-title {
+        font-size: 40px;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-primary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .timer-container {
+        bottom: 20px;
+        padding: 15px 25px;
+      }
+
+      .timer-countdown {
+        font-size: 28px;
+      }
+    }
+
+    /* System message - Nova Lux style */
+    .system-message {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--black);
+      color: #0f0;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 20px 30px;
+      border: 2px solid #0f0;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
+      opacity: 0;
+      transform: translateY(100px);
+      transition: all 0.5s;
+      max-width: 300px;
+      z-index: 1000;
+    }
+
+    .system-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .truth-mode {
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 0, 0, 0.05) 10px,
+        rgba(255, 0, 0, 0.05) 20px
+      );
+    }
+
+    /* Footer */
+    footer {
+      background: var(--black);
+      color: var(--gray);
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    footer a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor"></div>
+  <div class="cursor-follower"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-wrapper">
+      <a href="index.html" class="nav-link interactive">Accueil</a>
+      <a href="#presse" class="nav-link interactive">Presse</a>
+      <a href="#temoignages" class="nav-link interactive">Témoignages</a>
+      <a href="#auteur" class="nav-link interactive">L'auteur</a>
+      <a href="#" class="nav-cta interactive">Commander</a>
+    </div>
+  </nav>
+
+  <!-- Trust Banner -->
+  <div class="trust-banner">
+    <span>🚚 Livraison gratuite</span>
+    <span>•</span>
+    <span class="trust-stat" data-fake="523K">📚 Plus de 523 000 exemplaires vendus</span>
+    <span>•</span>
+    <span class="trust-rating" data-fake="4.8/5">⭐ 4.8/5 sur 12 453 avis</span>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <!-- Book -->
+      <div class="book-presentation reveal-item">
+        <div class="book-wrapper">
+          <div class="award-sticker" data-fake="true">
+            <span class="text-sm">PRIX</span>
+            <span class="text-xl">GONCOURT</span>
+            <span class="text-sm">2024</span>
+          </div>
+          <div class="book-3d interactive">
+            <img src="images/logo_blanc.png" alt="Nova Lux" class="book-logo">
+            <h1 class="book-title">NOVA LUX</h1>
+            <p class="book-author">French Faker</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="hero-content">
+        <div class="awards-list reveal-item">
+          <div class="award-badge" data-fake="true">
+            <span class="icon">🏆</span>
+            <span>Prix Goncourt 2024</span>
+          </div>
+          <div class="award-badge" data-fake="true">
+            <span class="icon">📖</span>
+            <span>Grand Prix RTL-Lire</span>
+          </div>
+          <div class="award-badge" data-fake="true">
+            <span class="icon">⭐</span>
+            <span>Prix des Lectrices Elle</span>
+          </div>
+        </div>
+
+        <h1 class="hero-title reveal-item">Le prophète digital</h1>
+        <p class="hero-subtitle reveal-item">Le roman qui décrypte notre époque</p>
+        
+        <p class="hero-description reveal-item">
+          Une plongée vertigineuse dans l'esprit d'un homme qui va utiliser l'intelligence artificielle 
+          pour créer une nouvelle religion et manipuler des milliers d'âmes en quête de sens. 
+          Un thriller spirituel salué unanimement par la critique.
+        </p>
+
+        <div class="hero-stats reveal-item">
+          <div class="stat" data-fake="523K">
+            <span class="stat-number">523K+</span>
+            <span class="stat-label">Exemplaires vendus</span>
+          </div>
+          <div class="stat" data-fake="4.8">
+            <span class="stat-number">4.8/5</span>
+            <span class="stat-label">Note moyenne</span>
+          </div>
+          <div class="stat" data-fake="37">
+            <span class="stat-number">37</span>
+            <span class="stat-label">Semaines #1</span>
+          </div>
+        </div>
+
+        <div class="cta-group reveal-item">
+          <a href="#" class="btn-primary interactive" onclick="revealTruth(); return false;">
+            Commander maintenant →
+          </a>
+          <div class="price-info">
+            <span class="price-current">19,90€</span>
+            <span class="price-old">24,50€</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Press Section -->
+  <section class="press-section section" id="presse">
+    <div class="section-header">
+      <h2 class="section-title reveal-text"><span>La presse est unanime</span></h2>
+      <p class="section-subtitle reveal-item">Les plus grands critiques littéraires saluent Nova Lux</p>
+    </div>
+
+    <div class="press-grid">
+      <div class="press-card interactive reveal-item" data-fake="true">
+        <div class="press-logo figaro">
+          Le Figaro Littéraire
+        </div>
+        <p class="press-quote">
+          "French Faker signe un chef-d'œuvre absolu. Nova Lux est le roman de notre époque, 
+          une œuvre visionnaire qui restera dans les mémoires. Un page-turner brillant et nécessaire."
+        </p>
+        <div class="press-author">
+          François Busnel
+          <div class="press-date">12 septembre 2024</div>
+        </div>
+      </div>
+
+      <div class="press-card interactive reveal-item" data-fake="true" style="transition-delay: 0.1s;">
+        <div class="press-logo monde">
+          Le Monde des Livres
+        </div>
+        <p class="press-quote">
+          "Vertigineux. French Faker nous plonge dans les abysses de la manipulation moderne 
+          avec une maîtrise narrative époustouflante. Du très grand art."
+        </p>
+        <div class="press-author">
+          Raphaëlle Leyris
+          <div class="press-date">15 septembre 2024</div>
+        </div>
+      </div>
+
+      <div class="press-card interactive reveal-item" data-fake="true" style="transition-delay: 0.2s;">
+        <div class="press-logo obs">
+          L'Obs
+        </div>
+        <p class="press-quote">
+          "Un roman total qui mêle avec brio thriller, spiritualité et critique sociale. 
+          French Faker confirme qu'il est l'une des voix majeures de sa génération."
+        </p>
+        <div class="press-author">
+          Jérôme Garcin
+          <div class="press-date">18 septembre 2024</div>
+        </div>
+      </div>
+
+      <div class="press-card interactive reveal-item" data-fake="true" style="transition-delay: 0.3s;">
+        <div class="press-logo point">
+          Le Point
+        </div>
+        <p class="press-quote">
+          "Brillant, dérangeant, indispensable. Nova Lux est déjà un classique contemporain. 
+          Une lecture qui marque profondément."
+        </p>
+        <div class="press-author">
+          Christophe Ono-dit-Biot
+          <div class="press-date">20 septembre 2024</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section section" id="temoignages">
+    <div class="section-header">
+      <h2 class="section-title reveal-text"><span>Ce que les lecteurs en disent</span></h2>
+      <p class="section-subtitle reveal-item">Rejoignez les milliers de lecteurs conquis</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card interactive reveal-item" data-fake="true">
+        <div class="testimonial-header">
+          <div class="testimonial-avatar">ML</div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">Marie Lefebvre</div>
+            <div class="testimonial-source">Fnac • Achat vérifié</div>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
+        <p class="testimonial-text">
+          "Un livre qui m'a bouleversée. L'écriture est fluide, l'histoire captivante. 
+          J'ai dévoré les 400 pages en deux jours. Le personnage d'Isaiah est fascinant. 
+          Je recommande absolument !"
+        </p>
+      </div>
+
+      <div class="testimonial-card interactive reveal-item" data-fake="true" style="transition-delay: 0.1s;">
+        <div class="testimonial-header">
+          <div class="testimonial-avatar">PD</div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">Pierre Dubois</div>
+            <div class="testimonial-source">Amazon • Achat vérifié</div>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
+        <p class="testimonial-text">
+          "LE livre de l'année. French Faker nous offre un thriller spirituel d'une intelligence rare. 
+          La fin est absolument dingue. Mon coup de cœur 2024."
+        </p>
+      </div>
+
+      <div class="testimonial-card interactive reveal-item" data-fake="true" style="transition-delay: 0.2s;">
+        <div class="testimonial-header">
+          <div class="testimonial-avatar">SC</div>
+          <div class="testimonial-info">
+            <div class="testimonial-name">Sophie Chen</div>
+            <div class="testimonial-source">Cultura • Achat vérifié</div>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
+        <p class="testimonial-text">
+          "Magistral ! Ce livre pose les bonnes questions sur notre société. 
+          L'histoire est prenante, les personnages complexes. Un vrai page-turner intelligent."
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <h2 class="heading-md">Nova Lux</h2>
+      <p>© 2025 French Faker. Tous droits réservés.</p>
+      <div style="margin-top: 30px;">
+        <a href="#" class="interactive" style="margin: 0 15px;">Mentions légales</a>
+        <a href="#" class="interactive" style="margin: 0 15px;">Contact</a>
+        <a href="#" class="interactive" style="margin: 0 15px;">Presse</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Timer Container -->
+  <div class="timer-container">
+    <div class="timer-text">Temps restant</div>
+    <div class="timer-countdown" id="countdown">30</div>
+    <button class="reveal-button interactive" id="revealButton" onclick="revealTruth()">
+      J'ai vu la lumière
+    </button>
+  </div>
+
+  <!-- System Message -->
+  <div class="system-message" id="systemMessage">
+    > SYSTEM BREACH DETECTED<br>
+    > REALITY CHECK INITIATED<br>
+    > FAKE NEWS PROTOCOL ACTIVATED
+  </div>
+
+  <script>
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    const follower = document.querySelector('.cursor-follower');
+    const interactiveElements = document.querySelectorAll('.interactive, a, button');
+    let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+    
+    document.addEventListener('mousemove', e => { 
+      mouseX = e.clientX; 
+      mouseY = e.clientY; 
+    });
+    
+    function animateCursor() {
+      posX += (mouseX - posX) * 0.1;
+      posY += (mouseY - posY) * 0.1;
+      if (follower) follower.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+      if (cursor) cursor.style.transform = `translate(${posX}px, ${posY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // Scroll reveal
+    const revealElements = document.querySelectorAll('.reveal-text, .reveal-item');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-inview');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+    
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Timer functionality
+    let timeLeft = 30;
+    const countdownEl = document.getElementById('countdown');
+    const revealButton = document.getElementById('revealButton');
+    let timerInterval;
+    let buttonRevealTimeout;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          revealTruth();
+        }
+      }, 1000);
+    }
+
+    // Show button after 10 seconds
+    buttonRevealTimeout = setTimeout(() => {
+      revealButton.classList.add('visible');
+    }, 10000);
+
+    // Start timer when page loads
+    window.addEventListener('load', () => {
+      setTimeout(startTimer, 2000); // Start after 2s to match timer fade-in
+    });
+
+    // Glitch functionality
+    let glitchLevel = 0;
+    let truthRevealed = false;
+    
+    function addFakeStamp(element, delay = 0) {
+      setTimeout(() => {
+        const stamp = document.createElement('div');
+        stamp.className = 'fake-stamp';
+        stamp.textContent = ['FAKE', 'FAUX', 'BIDON', 'INVENTÉ', 'FICTIF'][Math.floor(Math.random() * 5)];
+        
+        if (element.classList.contains('award-sticker')) {
+          // Position is handled by CSS
+        } else {
+          stamp.style.left = Math.random() * 80 + '%';
+          stamp.style.top = Math.random() * 80 + '%';
+        }
+        
+        stamp.style.animationDelay = delay + 'ms';
+        element.style.position = 'relative';
+        element.appendChild(stamp);
+      }, delay);
+    }
+    
+    function glitchElement(element, intensity = 1) {
+      element.classList.add('glitch-text');
+      if (intensity > 2) {
+        element.classList.add('corrupted');
+      }
+    }
+    
+    function corruptData() {
+      document.querySelectorAll('[data-fake]').forEach((el, index) => {
+        setTimeout(() => {
+          addFakeStamp(el, 0);
+          glitchElement(el, glitchLevel);
+          
+          if (el.querySelector('.stat-number')) {
+            const statNum = el.querySelector('.stat-number');
+            setTimeout(() => {
+              statNum.textContent = ['999K+', '∞', 'ERROR', '404', '???'][Math.floor(Math.random() * 5)];
+              statNum.classList.add('corrupted');
+            }, 500);
+          }
+        }, index * 200);
+      });
+    }
+    
+    function showSystemMessage() {
+      const msg = document.getElementById('systemMessage');
+      msg.classList.add('show');
+      
+      setTimeout(() => {
+        msg.innerHTML = '> MANIPULATION DÉTECTÉE<br>> CE SITE EST UNE FICTION<br>> COMME LE LIVRE QU\'IL PROMEUT';
+      }, 3000);
+    }
+    
+    function revealTruth() {
+      if (truthRevealed) return;
+      truthRevealed = true;
+      
+      // Clear timer if still running
+      if (timerInterval) clearInterval(timerInterval);
+      if (buttonRevealTimeout) clearTimeout(buttonRevealTimeout);
+      
+      // Hide timer container
+      document.querySelector('.timer-container').style.display = 'none';
+      
+      document.body.classList.add('truth-mode');
+      showSystemMessage();
+      
+      glitchLevel = 1;
+      corruptData();
+      
+      setTimeout(() => {
+        glitchLevel = 2;
+        document.querySelectorAll('.press-quote').forEach((quote, i) => {
+          setTimeout(() => {
+            quote.innerHTML = '<span class="corrupted">CES CRITIQUES N\'EXISTENT PAS</span>';
+          }, i * 300);
+        });
+      }, 2000);
+      
+      setTimeout(() => {
+        glitchLevel = 3;
+        const hero = document.querySelector('.hero-title');
+        hero.innerHTML = 'Le prophète <span class="corrupted">FAKE</span>';
+        
+        const subtitle = document.querySelector('.hero-subtitle');
+        subtitle.innerHTML = 'Une méta-fiction sur la manipulation';
+      }, 4000);
+      
+      setTimeout(() => {
+        alert("Bravo ! Vous avez découvert la supercherie.\n\nCeci est une démonstration de manipulation par les fausses informations.\n\nLe livre Nova Lux de French Faker existe vraiment et parle justement de ces thématiques.\n\nVous pouvez le commander sur Amazon si vous le souhaitez.");
+      }, 6000);
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
